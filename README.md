@@ -12,6 +12,7 @@
     * [ ] Create the Maven project (0.25hrs)
     * [ ] Add all necessary dependencies (0.25hrs)
     * [ ] Establish project skeleton (0.5hrs)
+    * [ ] Install and run Docker MySQL container (0.25hrs)
 * [ ] Create MySQL Schema (1.0hr)
 * [ ] Backend Implementation
     * [ ] Create Models (0.5hrs)
