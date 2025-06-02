@@ -8,10 +8,10 @@
 
 ### Task List
 
-* [ ] Project Setup
-    * [ ] Create the Maven project (0.25hrs)
-    * [ ] Add all necessary dependencies (0.25hrs)
-    * [ ] Establish project skeleton (0.5hrs)
+* [x] Project Setup
+    * [x] Create the Maven project (0.25hrs)
+    * [x] Add all necessary dependencies (0.25hrs)
+    * [x] Establish project skeleton (0.5hrs)
 * [ ] Create MySQL Schema (1.0hr)
 * [ ] Backend Implementation
     * [ ] Create Models (0.5hrs)
@@ -20,7 +20,6 @@
         * [ ] ReviewRepository (0.75hrs)
         * [ ] UserRepository (0.75hrs)
         * [ ] CatalogRepository (0.75hrs)
-        * [ ] ArtistRepository (0.75hrs)
         * [ ] Mappers (0.5hrs)
         * [ ] DataException (0.25hrs)
     * [ ] Data Layer Tests (2.0hrs)
@@ -29,7 +28,6 @@
         * [ ] ReviewService (0.5hrs)
         * [ ] UserService (0.5hrs)
         * [ ] CatalogService (0.5hrs)
-        * [ ] ArtistService (0.5hrs)
         * [ ] Result (0.1hrs)
         * [ ] ResultType (0.1hrs)
     * [ ] Domain Layer Tests (1.5hrs)
@@ -38,7 +36,6 @@
         * [ ] ReviewController (0.75hrs)
         * [ ] UserController (0.75hrs)
         * [ ] CatalogController (0.75hrs)
-        * [ ] ArtistController (0.75hrs)
         * [ ] GlobalExceptionHandler (0.1hrs)
         * [ ] ErrorResponse (0.1hrs)
     * [ ] Security Components
