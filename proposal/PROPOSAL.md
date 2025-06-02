@@ -53,7 +53,7 @@ User Scenarios: Explain how the technical solution will support different user n
 
 Technology Stack: Briefly mention the key technologies, frameworks, and tools you will use to build the application. Why did you choose these tools, and how will they help you achieve your solution?
 
-* Database: MySQL
+* Database: MySQL daemon via the public MySQL Docker image
 * Backend: Spring Boot, Spring MVC, JDBC
 * Security: JWT with Spring Security for user login & roles
 * Frontend: React
