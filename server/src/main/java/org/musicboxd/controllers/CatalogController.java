@@ -1,6 +1,8 @@
 package org.musicboxd.controllers;
 
 import org.musicboxd.domain.CatalogService;
+import org.musicboxd.domain.Result;
+import org.musicboxd.domain.ResultType;
 import org.musicboxd.models.Catalog;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +20,9 @@ public class CatalogController {
     public CatalogController(CatalogService service) {this.service = service;}
 
     @GetMapping
-    public List<Catalog> findAll() {return service.findAll();}
+    public List<Catalog> findAll() {
+        return service.findAll();
+    }
 
     @GetMapping("/{catalogId}")
     public ResponseEntity<Catalog> findById(@PathVariable int catalogId) {
@@ -29,18 +33,42 @@ public class CatalogController {
         return ResponseEntity.ok(catalog);
     }
 
+    @GetMapping("/users/{userId}")
+    public List<Catalog> findByUserId(@PathVariable int userId) {
+        return service.findByUserId(userId);
+    }
+
     @PostMapping
-    public ResponseEntity<Catalog> add(@RequestBody Catalog catalog) {
-        return null;
+    public ResponseEntity<Object> add(@RequestBody Catalog catalog) {
+        Result<Catalog> result = service.add(catalog);
+        if (result.getType() == ResultType.SUCCESS) {
+            return new ResponseEntity<>(result.getPayload(), HttpStatus.CREATED);
+        }
+        return ErrorResponse.build(result);
     }
 
-    @PutMapping
-    public ResponseEntity<Catalog> update(@PathVariable int catalogId, @RequestBody Catalog catalog) {
-        return null;
+    @PutMapping("/{catalogId}")
+    public ResponseEntity<Object> update(@PathVariable int catalogId, @RequestBody Catalog catalog) {
+        catalog.setCatalogEntryId(catalogId);
+        Result<Catalog> result = service.update(catalog);
+
+        if (result.getType() == ResultType.SUCCESS) {
+            return ResponseEntity.ok(result.getPayload());
+        } else if (result.getType() == ResultType.NOT_FOUND) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return ErrorResponse.build(result);
     }
 
-    @DeleteMapping
-    public ResponseEntity<Catalog> deleteById(@PathVariable int catalogId) {
-        return null;
+    @DeleteMapping("/{catalogId}")
+    public ResponseEntity<Object> deleteById(@PathVariable int catalogId) {
+        Result<Catalog> result = service.deleteById(catalogId);
+
+        if (result.getType() == ResultType.SUCCESS) {
+            return ResponseEntity.ok(result.getPayload());
+        } else if (result.getType() == ResultType.NOT_FOUND) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return ErrorResponse.build(result);
     }
 }
