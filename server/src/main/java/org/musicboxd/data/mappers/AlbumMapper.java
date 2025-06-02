@@ -16,8 +16,7 @@ public class AlbumMapper implements RowMapper<Album> {
         Album album = new Album();
         album.setAlbumId(resultSet.getInt("album_id"));
         album.setArtist(resultSet.getString("artist"));
-        album.setId(resultSet.getString("id"));
-        album.setFirstReleaseDate(resultSet.getDate("first_released_date"));
+        album.setFirstReleaseDate(resultSet.getDate("release_date"));
         album.setTitle(resultSet.getString("title"));
         album.setArtUrl(resultSet.getString("art_url"));
         album.setReviews(null);

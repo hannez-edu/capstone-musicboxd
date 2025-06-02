@@ -31,6 +31,8 @@ class ReviewJdbcTemplateRepositoryTest {
     Review with id 2 will be updated. album id = 3, user id = 7.
     Review with id 3 will be deleted. album id = 5, user id = 12.
 
+    Likes for review 1 should not be changed from 3.
+
     There may be other reviews.
      */
 
@@ -42,5 +44,21 @@ class ReviewJdbcTemplateRepositoryTest {
 
         assertNotNull(all);
         assertTrue(all.size() >= 2);
+    }
+
+    /* FindById */
+
+    @Test
+    public void shouldFindById() {
+        Review review = repository.findById(1, 0);
+
+        assertNotNull(review);
+
+        assertNotNull(review.getUser());
+        assertEquals(review.getUserId(), review.getUser().getUserId());
+
+        assertEquals(3, review.getLikes());
+
+        assertNotNull(review.getAlbum());
     }
 }
