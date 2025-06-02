@@ -2,6 +2,7 @@ package org.musicboxd.models;
 
 import java.util.List;
 
+// TODO: This will need to extend Spring Security's "User" class to set username & password in that system during security implementation
 public class User {
     private int userId;
     private String userName;

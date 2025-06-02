@@ -107,6 +107,9 @@ public class UserJdbcTemplateRepository implements UserRepository {
         return jdbcTemplate.update("delete from users where user_id = ?;", userId) > 0;
     }
 
+    // TODO: Might want some function to update the Roles for this user when we update/add the user *******************************************
+        // Will implement this alongside the Security implementation.
+
     // Should set the user's role list
     private void joinRole(User user) {
         RowMapper<UserRole> rowMapper = (rs, rowNum) -> UserRole.valueOf(rs.getString("name").toUpperCase());
