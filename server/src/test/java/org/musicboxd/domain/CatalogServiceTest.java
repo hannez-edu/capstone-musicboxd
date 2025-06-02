@@ -21,4 +21,162 @@ public class CatalogServiceTest {
 
     @MockBean
     CatalogRepository repository;
+
+    @Test
+    void shouldFindAll(){
+        List<Catalog> expected = List.of(makeCatalog(), makeCatalog(), makeCatalog());
+        when(repository.findAll()).thenReturn(expected);
+
+        List<Catalog> result = service.findAll();
+
+        assertEquals(expected, result);
+        assertEquals(3, result.size());
+        verify(repository).findAll();
+    }
+
+    @Test
+    void shouldFindById() {
+        Catalog expected = makeCatalog();
+        when(repository.findById(1)).thenReturn(expected);
+
+        Catalog result = service.findById(1);
+
+        assertEquals(expected, result);
+        verify(repository).findById(1);
+    }
+
+    @Test
+    void shouldReturnNullWhenCatalogNotFound() {
+        when(repository.findById(999)).thenReturn(null);
+
+        Catalog result = service.findById(999);
+
+        assertNull(result);
+        verify(repository).findById(999);
+    }
+
+    @Test
+    void shouldFindByUserId() {
+        List<Catalog> expected = List.of(makeCatalog(), makeCatalog());
+        when(repository.findByUserId(1)).thenReturn(expected);
+
+        List<Catalog> result = service.findByUserId(1);
+
+        assertEquals(expected, result);
+        verify(repository).findByUserId(1);
+    }
+
+    @Test
+    void shouldAddValidCatalog() {
+        Catalog catalog = makeCatalog();
+        Catalog savedCatalog = makeCatalog();
+        savedCatalog.setCatalogEntryId(1);
+
+        when(repository.add(catalog)).thenReturn(savedCatalog);
+
+        Result<Catalog> result = service.add(catalog);
+
+        assertEquals(ResultType.SUCCESS, result.getType());
+        assertEquals(savedCatalog, result.getPayload());
+        assertTrue(result.getMessages().isEmpty());
+        verify(repository).add(catalog);
+    }
+
+    @Test
+    void shouldNotAddNullCatalog() {
+        Result<Catalog> result = service.add(null);
+
+        assertEquals(ResultType.INVALID, result.getType());
+        assertNull(result.getPayload());
+        assertTrue(result.getMessages().contains("Catalog entry cannot be null."));
+        verify(repository, never()).add(any());
+    }
+
+    @Test
+    void shouldNotAddCatalogWithInvalidUserId() {
+        Catalog catalog = makeCatalog();
+        catalog.setUserId(0);
+
+        Result<Catalog> result = service.add(catalog);
+
+        assertEquals(ResultType.INVALID, result.getType());
+        assertNull(result.getPayload());
+        assertTrue(result.getMessages().contains("User ID is required."));
+        verify(repository, never()).add(any());
+    }
+
+    @Test
+    void shouldNotAddCatalogWithInvalidAlbumId() {
+        Catalog catalog = makeCatalog();
+        catalog.setAlbumId(0);
+
+        Result<Catalog> result = service.add(catalog);
+
+        assertEquals(ResultType.INVALID, result.getType());
+        assertTrue(result.getMessages().contains("Album ID is required."));
+        verify(repository, never()).add(any());
+    }
+
+    @Test
+    void shouldNotAddCatalogWithNullStatus() {
+        Catalog catalog = makeCatalog();
+        catalog.setStatus(null);
+
+        Result<Catalog> result = service.add(catalog);
+
+        assertEquals(ResultType.INVALID, result.getType());
+        assertTrue(result.getMessages().contains("Status is required."));
+        verify(repository, never()).add(any());
+    }
+
+    @Test
+    void shouldReturnMultipleValidationErrors() {
+        Catalog catalog = new Catalog();
+        catalog.setCatalogEntryId(0);
+        catalog.setUserId(0);
+        catalog.setAlbumId(0);
+        catalog.setStatus(null);
+
+        Result<Catalog> result = service.add(catalog);
+
+        assertEquals(ResultType.INVALID, result.getType());
+        assertEquals(3, result.getMessages().size());
+        assertTrue(result.getMessages().contains("User ID is required."));
+        assertTrue(result.getMessages().contains("Album ID is required."));
+        assertTrue(result.getMessages().contains("Status is required."));
+        verify(repository, never()).add(any());
+    }
+
+    @Test
+    void shouldNotAddWhenRepositoryFails() {
+        Catalog catalog = makeCatalog();
+        when(repository.add(catalog)).thenReturn(null);
+
+        Result<Catalog> result = service.add(catalog);
+
+        assertEquals(ResultType.INVALID, result.getType());
+        assertTrue(result.getMessages().contains("Failed to add catalog entry."));
+        verify(repository).add(catalog);
+    }
+
+    @Test
+    void shouldNotAddDuplicateUserAlbum() {
+        Catalog catalog = makeCatalog();
+        when(repository.add(catalog)).thenThrow(new RuntimeException("unique_user_album constraint violation"));
+
+        Result<Catalog> result = service.add(catalog);
+
+        assertEquals(ResultType.INVALID, result.getType());
+        assertTrue(result.getMessages().contains("User already has this album in their catalog."));
+        verify(repository).add(catalog);
+    }
+
+    private Catalog makeCatalog() {
+        Catalog catalog = new Catalog();
+        catalog.setCatalogEntryId(0); // Will be set by repository
+        catalog.setUserId(1);
+        catalog.setAlbumId(1);
+        catalog.setStatus(CatalogStatus.WANT_TO_LISTEN);
+        return catalog;
+    }
 }
