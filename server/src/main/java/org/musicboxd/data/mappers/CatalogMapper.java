@@ -14,7 +14,7 @@ public class CatalogMapper implements RowMapper<Catalog> {
         catalog.setCatalogEntryId(rs.getInt("catalog_entry_id"));
         catalog.setUserId(rs.getInt("user_id"));
         catalog.setAlbumId(rs.getInt("album_id"));
-        catalog.setStatus((CatalogStatus) rs.getObject("status"));
+        catalog.setStatus(CatalogStatus.valueOf(rs.getString("status")));
         return catalog;
     }
 }
