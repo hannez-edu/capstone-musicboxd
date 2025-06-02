@@ -8,18 +8,11 @@
 
 ### Task List
 
-<<<<<<< HEAD
-* [ ] Project Setup
-    * [ ] Create the Maven project (0.25hrs)
-    * [ ] Add all necessary dependencies (0.25hrs)
-    * [ ] Establish project skeleton (0.5hrs)
-=======
-* [ ] Project Setup
-    * [ ] Create the Maven project (0.25hrs)
-    * [ ] Add all necessary dependencies (0.25hrs)
-    * [ ] Establish project skeleton (0.5hrs)
-    * [ ] Install and run Docker MySQL container (0.25hrs)
->>>>>>> 9cf10169c488f937719f79f92d82c24ce43e7a64
+* [x] Project Setup
+    * [x] Create the Maven project (0.25hrs)
+    * [x] Add all necessary dependencies (0.25hrs)
+    * [x] Establish project skeleton (0.5hrs)
+    * [x] Install and run Docker MySQL container (0.25hrs)
 * [ ] Create MySQL Schema (1.0hr)
 * [ ] Backend Implementation
     * [ ] Create Models (0.5hrs)
