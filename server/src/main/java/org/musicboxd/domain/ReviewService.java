@@ -18,4 +18,8 @@ public class ReviewService {
     public List<Review> findAll() {
         return repository.findAll();
     }
+
+    public Review findById(int reviewId, int currentUserId) {
+        return repository.findById(reviewId, currentUserId);
+    }
 }
