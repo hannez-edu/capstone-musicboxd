@@ -107,7 +107,12 @@ public class ReviewJdbcTemplateRepository implements ReviewRepository {
 
     @Override
     public boolean update(Review review) {
-        return false;
+        final String sql = "update reviews set " +
+                "content = ?, " +
+                "stars = ? " +
+                "where review_id = ?;";
+
+        return jdbcTemplate.update(sql, review.getContent(), review.getStars(), review.getReviewId()) > 0;
     }
 
     @Override

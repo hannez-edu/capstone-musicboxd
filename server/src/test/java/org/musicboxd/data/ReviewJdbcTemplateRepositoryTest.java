@@ -124,6 +124,23 @@ class ReviewJdbcTemplateRepositoryTest {
         assertEquals(3, actual.getStars());
     }
 
+    /* Update */
+
+    @Test
+    public void shouldUpdate() {
+        Review review = new Review();
+        review.setReviewId(2);
+        review.setStars(3);
+        review.setContent("Updated");
+
+        assertTrue(repository.update(review));
+
+        Review updated = repository.findById(2, 0);
+
+        assertEquals("Updated", updated.getContent());
+        assertEquals(3, updated.getStars());
+    }
+
     /*
     Join Tests
 
