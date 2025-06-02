@@ -31,12 +31,12 @@ public class ReviewJdbcTemplateRepository implements ReviewRepository {
 
     @Override
     @Transactional
-    public Review findById(int reviewerId, int currentUserId) {
+    public Review findById(int reviewId, int currentUserId) {
         final String sql = "select review_id, album_id, user_id, `content`, stars " +
                 "from reviews " +
                 "where review_id = ?;";
 
-        Review review = jdbcTemplate.queryForObject(sql, new ReviewMapper(), reviewerId);
+        Review review = jdbcTemplate.queryForObject(sql, new ReviewMapper(), reviewId);
 
         if (review != null) {
             joinUser(review);
