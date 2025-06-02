@@ -171,6 +171,103 @@ public class CatalogServiceTest {
         verify(repository).add(catalog);
     }
 
+    @Test
+    void shouldUpdateValidCatalog() {
+        Catalog catalog = makeCatalog();
+        catalog.setCatalogEntryId(1);
+
+        when(repository.findById(1)).thenReturn(catalog);
+        when(repository.update(catalog)).thenReturn(true);
+
+        Result<Catalog> result = service.update(catalog);
+
+        assertEquals(ResultType.SUCCESS, result.getType());
+        assertEquals(catalog, result.getPayload());
+        assertTrue(result.getMessages().isEmpty());
+        verify(repository).findById(1);
+        verify(repository).update(catalog);
+    }
+
+    @Test
+    void shouldNotUpdateWithoutId() {
+        Catalog catalog = makeCatalog();
+        catalog.setCatalogEntryId(0);
+
+        Result<Catalog> result = service.update(catalog);
+
+        assertEquals(ResultType.INVALID, result.getType());
+        assertTrue(result.getMessages().contains("Catalog entry ID is required for updates."));
+        verify(repository, never()).findById(anyInt());
+        verify(repository, never()).update(any());
+    }
+
+    @Test
+    void shouldNotUpdateWithoutUserId() {
+        Catalog catalog = makeCatalog();
+        catalog.setCatalogEntryId(1);
+        catalog.setUserId(0);
+
+        when(repository.findById(1)).thenReturn(makeCatalog());
+
+        Result<Catalog> result = service.update(catalog);
+
+        assertEquals(ResultType.INVALID, result.getType());
+        assertTrue(result.getMessages().contains("User ID is required."));
+        verify(repository).findById(1);
+        verify(repository, never()).update(any());
+    }
+
+    @Test
+    void shouldNotUpdateNonExistentCatalog() {
+        Catalog catalog = makeCatalog();
+        catalog.setCatalogEntryId(999);
+
+        when(repository.findById(999)).thenReturn(null);
+
+        Result<Catalog> result = service.update(catalog);
+
+        assertEquals(ResultType.NOT_FOUND, result.getType());
+        assertTrue(result.getMessages().contains("Catalog entry not found."));
+        verify(repository).findById(999);
+        verify(repository, never()).update(any());
+    }
+
+    @Test
+    void shouldHandleUpdateFailure() {
+        Catalog catalog = makeCatalog();
+        catalog.setCatalogEntryId(1);
+
+        when(repository.findById(1)).thenReturn(catalog);
+        when(repository.update(catalog)).thenReturn(false);
+
+        Result<Catalog> result = service.update(catalog);
+
+        assertEquals(ResultType.INVALID, result.getType());
+        assertTrue(result.getMessages().contains("Failed to update catalog entry."));
+        verify(repository).findById(1);
+        verify(repository).update(catalog);
+    }
+
+    @Test
+    void shouldDeleteById() {
+        when(repository.deleteById(1)).thenReturn(true);
+
+        boolean result = service.deleteById(1);
+
+        assertTrue(result);
+        verify(repository).deleteById(1);
+    }
+
+    @Test
+    void shouldNotDeleteByNonExistentId() {
+        when(repository.deleteById(999)).thenReturn(false);
+
+        boolean result = service.deleteById(999);
+
+        assertFalse(result);
+        verify(repository).deleteById(999);
+    }
+
     private Catalog makeCatalog() {
         Catalog catalog = new Catalog();
         catalog.setCatalogEntryId(0); // Will be set by repository
