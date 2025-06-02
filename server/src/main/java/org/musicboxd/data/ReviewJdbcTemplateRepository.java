@@ -36,7 +36,8 @@ public class ReviewJdbcTemplateRepository implements ReviewRepository {
                 "from reviews " +
                 "where review_id = ?;";
 
-        Review review = jdbcTemplate.queryForObject(sql, new ReviewMapper(), reviewId);
+        Review review = jdbcTemplate.query(sql, new ReviewMapper(), reviewId)
+                .stream().findFirst().orElse(null);
 
         if (review != null) {
             joinUser(review);
@@ -49,8 +50,33 @@ public class ReviewJdbcTemplateRepository implements ReviewRepository {
     }
 
     @Override
+    @Transactional
     public List<Review> findByUserId(int reviewerId, int currentUserId) {
-        return List.of();
+        final String userSql = "select user_id, password_hash, user_name, email, first_name, last_name " +
+                "from users " +
+                "where user_id = ?;";
+
+        User user = jdbcTemplate.query(userSql, new UserMapper(), reviewerId)
+                .stream().findFirst().orElse(null);
+
+        if (user == null) {
+            return null;
+        }
+
+        final String reviewSql = "select review_id, album_id, user_id, `content`, stars " +
+                "from reviews " +
+                "where user_id = ?;";
+
+        List<Review> reviews = jdbcTemplate.query(reviewSql, new ReviewMapper(), user.getUserId());
+
+        for (Review review : reviews) {
+            review.setUser(user);
+            joinLikes(review);
+            joinLikedByCurrentUser(review, currentUserId);
+            joinAlbum(review);
+        }
+
+        return reviews;
     }
 
     @Override
@@ -78,7 +104,8 @@ public class ReviewJdbcTemplateRepository implements ReviewRepository {
                 "from users " +
                 "where user_id = ?;";
 
-        User user = jdbcTemplate.queryForObject(sql, new UserMapper(), review.getUserId());
+        User user = jdbcTemplate.query(sql, new UserMapper(), review.getUserId())
+                .stream().findFirst().orElse(null);
 
         if (user != null) {
             user.setPassword(null);
@@ -122,7 +149,8 @@ public class ReviewJdbcTemplateRepository implements ReviewRepository {
                 "from albums " +
                 "where album_id = ?;";
 
-        Album album = jdbcTemplate.queryForObject(sql, new AlbumMapper(), review.getAlbumId());
+        Album album = jdbcTemplate.query(sql, new AlbumMapper(), review.getAlbumId())
+                .stream().findFirst().orElse(null);
 
         review.setAlbum(album);
     }

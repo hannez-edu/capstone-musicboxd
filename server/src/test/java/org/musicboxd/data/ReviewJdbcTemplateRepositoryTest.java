@@ -32,11 +32,15 @@ class ReviewJdbcTemplateRepositoryTest {
     /*
     Test Plan
 
-    Review with id 1 will not be changed. album id = 1, user id = 1.
-    Review with id 2 will be updated. album id = 3, user id = 7.
-    Review with id 3 will be deleted. album id = 5, user id = 12.
+    Review id 1 will not be changed at all. album id = 1, user id = 1.
+    Review id 2 will be updated. album id = 3, user id = 7.
+    Review id 3 will have its likes/dislikes changed. initially liked by user ids 1, 3.
+    Review id 5 will be deleted. album id = 9, user id = 10.
 
-    Likes for review 1 should not be changed from 3.
+    User id 1 has 1 review.
+    User id 2 has 2 reviews.
+
+    User id 4 will create a review.
 
     There may be other reviews.
      */
@@ -67,6 +71,41 @@ class ReviewJdbcTemplateRepositoryTest {
 
         // Check stars
         assertEquals(4, review.getStars());
+    }
+
+    @Test
+    public void shouldFindNullForNonexistentId() {
+        Review review = repository.findById(99999, 0);
+
+        assertNull(review);
+    }
+
+    /* FindByUserId */
+
+    @Test
+    public void shouldFindByUserId() {
+        List<Review> reviews = repository.findByUserId(2, 0);
+
+        assertNotNull(reviews);
+        assertEquals(2, reviews.size());
+
+        assertTrue(reviews.stream().anyMatch(r -> r.getReviewId() == 3));
+        assertTrue(reviews.stream().anyMatch(r -> r.getReviewId() == 4));
+    }
+
+    @Test
+    public void shouldFindEmptyListForUserWithNoReviews() {
+        List<Review> reviews = repository.findByUserId(5, 0);
+
+        assertNotNull(reviews);
+        assertEquals(0, reviews.size());
+    }
+
+    @Test
+    public void shouldFindNullForNonexistentUser() {
+        List<Review> reviews = repository.findByUserId(99999, 0);
+
+        assertNull(reviews);
     }
 
     /*
