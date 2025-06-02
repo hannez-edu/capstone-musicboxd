@@ -121,6 +121,12 @@ public class UserServiceTest {
         testUser.setEmail("test@test.xyz");
         result = service.update(testUser);
         assertFalse(result.getMessages().isEmpty());
+
+        // Now, it should update fine.
+        when(repository.update(testUser)).thenReturn(true);
+        testUser.setUserId(1);
+        result = service.update(testUser);
+        assertTrue(result.getMessages().isEmpty());
     }
 
     @Test
