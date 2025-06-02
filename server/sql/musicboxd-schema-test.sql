@@ -74,7 +74,7 @@ create table catalog_entry (
 catalog_entry_id int auto_increment primary key,
 user_id int not null,
 album_id int not null,
-status enum('LISTENED, NO_INTEREST, WANT_TO_LISTEN') not null,
+status enum('LISTENED', 'NO_INTEREST', 'WANT_TO_LISTEN') not null,
 
 constraint fk_catalog_entry_user foreign key (user_id) references users(user_id),
 constraint fk_catalog_entry_album foreign key (album_id) references albums(album_id),
@@ -86,22 +86,22 @@ delimiter //
 create procedure set_known_good_state()
 begin
 
-delete from users;
-alter table users auto_increment = 1;
-delete from roles;
-alter table roles auto_increment = 1;
-delete from albums;
-alter table albums auto_increment = 1;
-delete from reviews;
-alter table reviews auto_increment = 1;
 delete from catalog_entry;
 alter table catalog_entry auto_increment = 1;
-delete from user_role;
-alter table user_role auto_increment = 1;
-delete from review_likes;
-alter table review_likes auto_increment = 1;
 delete from `following`;
 alter table `following` auto_increment = 1;
+delete from albums;
+alter table albums auto_increment = 1;
+delete from review_likes;
+alter table review_likes auto_increment = 1;
+delete from user_role;
+alter table user_role auto_increment = 1;
+delete from roles;
+alter table roles auto_increment = 1;
+delete from users;
+alter table users auto_increment = 1;
+delete from reviews;
+alter table reviews auto_increment = 1;
 
 insert into users (user_id, user_name, email, first_name, last_name, password_hash) values
 	(1, 'khatrey0', 'khatrey0@webmd.com', 'Kristine', 'Hatrey', '$2a$04$kYGG1DTPvd4N5Vlkup.Y9uzOH12nwz5blC5vZ0vG3vYhJrn3yb7LG'),
@@ -156,7 +156,7 @@ insert into albums (artist, title, release_date, art_url) values
 insert into reviews (album_id, user_id, content, stars) values
 	(1, 1, "Proin leo odio, porttitor id, consequat in, consequat ut, nulla. Sed accumsan felis. Ut at dolor quis odio consequat varius. Integer ac leo. Pellentesque ultrices mattis odio. Donec vitae nisi. Nam ultrices, libero non mattis pulvinar, nulla pede ullamcorper augue, a suscipit nulla elit ac nulla. Sed vel enim sit amet nunc viverra dapibus. Nulla suscipit ligula in lacus.", 4),
 	(3, 7, "Nunc purus. Phasellus in felis. Donec semper sapien a libero. Nam dui. Proin leo odio, porttitor id, consequat in, consequat ut, nulla. Sed accumsan felis. Ut at dolor quis odio consequat varius.", 1),
-	(5, 12, "Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Duis faucibus accumsan odio. Curabitur convallis. Duis consequat dui nec nisi volutpat eleifend. Donec ut dolor. Morbi vel lectus in quam fringilla rhoncus. Mauris enim leo, rhoncus sed, vestibulum sit amet, cursus id, turpis. Integer aliquet, massa id lobortis convallis, tortor risus dapibus augue, vel accumsan tellus nisi eu orci. Mauris lacinia sapien quis libero. Nullam sit amet turpis elementum ligula vehicula consequat. Morbi a ipsum.", 2),
+	(5, 2, "Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Duis faucibus accumsan odio. Curabitur convallis. Duis consequat dui nec nisi volutpat eleifend. Donec ut dolor. Morbi vel lectus in quam fringilla rhoncus. Mauris enim leo, rhoncus sed, vestibulum sit amet, cursus id, turpis. Integer aliquet, massa id lobortis convallis, tortor risus dapibus augue, vel accumsan tellus nisi eu orci. Mauris lacinia sapien quis libero. Nullam sit amet turpis elementum ligula vehicula consequat. Morbi a ipsum.", 2),
 	(2, 2, "Nullam molestie nibh in lectus. Pellentesque at nulla.", 5),
 	(9, 10, "Sed ante. Vivamus tortor.", 1);
     
@@ -191,7 +191,6 @@ insert into catalog_entry (user_id, album_id, `status`) values
     (7, 16, 'NO_INTEREST');
     
 insert into `following` (followed_id, follower_id) values
-    (1, 1),
     (1, 2),
     (1, 3),
     (1, 4),
