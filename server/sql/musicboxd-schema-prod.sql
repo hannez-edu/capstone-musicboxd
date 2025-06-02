@@ -13,7 +13,7 @@ last_name varchar(50) null
 
 create table roles (
 role_id int auto_increment primary key,
-name varchar(50) not null
+`name` varchar(50) not null
 );
 
 create table user_role (
@@ -74,7 +74,7 @@ create table catalog_entry (
 catalog_entry_id int auto_increment primary key,
 user_id int not null,
 album_id int not null,
-status enum('LISTENED, NO_INTEREST, WANT_TO_LISTEN') not null,
+`status` enum('LISTENED, NO_INTEREST, WANT_TO_LISTEN') not null,
 
 constraint fk_catalog_entry_user foreign key (user_id) references users(user_id),
 constraint fk_catalog_entry_album foreign key (album_id) references albums(album_id),
