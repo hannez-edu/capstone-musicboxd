@@ -31,6 +31,7 @@ public class UserService {
             return result;
         }
 
+        result.setPayload(user);
         return result;
     }
 
