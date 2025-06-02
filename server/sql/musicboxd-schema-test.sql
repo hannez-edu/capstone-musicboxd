@@ -90,18 +90,18 @@ delete from catalog_entry;
 alter table catalog_entry auto_increment = 1;
 delete from `following`;
 alter table `following` auto_increment = 1;
-delete from albums;
-alter table albums auto_increment = 1;
 delete from review_likes;
 alter table review_likes auto_increment = 1;
+delete from reviews;
+alter table reviews auto_increment = 1;
+delete from albums;
+alter table albums auto_increment = 1;
 delete from user_role;
 alter table user_role auto_increment = 1;
 delete from roles;
 alter table roles auto_increment = 1;
 delete from users;
 alter table users auto_increment = 1;
-delete from reviews;
-alter table reviews auto_increment = 1;
 
 insert into users (user_id, user_name, email, first_name, last_name, password_hash) values
 	(1, 'khatrey0', 'khatrey0@webmd.com', 'Kristine', 'Hatrey', '$2a$04$kYGG1DTPvd4N5Vlkup.Y9uzOH12nwz5blC5vZ0vG3vYhJrn3yb7LG'),
