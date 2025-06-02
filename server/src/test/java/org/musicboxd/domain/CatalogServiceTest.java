@@ -250,22 +250,47 @@ public class CatalogServiceTest {
 
     @Test
     void shouldDeleteById() {
+        Catalog catalog = makeCatalog();
+        catalog.setCatalogEntryId(1);
+
+        when(repository.findById(1)).thenReturn(catalog);
         when(repository.deleteById(1)).thenReturn(true);
 
-        boolean result = service.deleteById(1);
+        Result<Catalog> result = service.deleteById(1);
 
-        assertTrue(result);
+        assertEquals(ResultType.SUCCESS, result.getType());
+        assertEquals(catalog, result.getPayload());
+        assertTrue(result.getMessages().isEmpty());
+        verify(repository).findById(1);
         verify(repository).deleteById(1);
     }
 
     @Test
-    void shouldNotDeleteByNonExistentId() {
-        when(repository.deleteById(999)).thenReturn(false);
+    void shouldNotDeleteNonExistentCatalog() {
+        when(repository.findById(999)).thenReturn(null);
 
-        boolean result = service.deleteById(999);
+        Result<Catalog> result = service.deleteById(999);
 
-        assertFalse(result);
-        verify(repository).deleteById(999);
+        assertEquals(ResultType.NOT_FOUND, result.getType());
+        assertTrue(result.getMessages().contains("Catalog entry not found."));
+        verify(repository).findById(999);
+        verify(repository, never()).deleteById(anyInt());
+    }
+
+    @Test
+    void shouldHandleDeleteFailure() {
+        Catalog catalog = makeCatalog();
+        catalog.setCatalogEntryId(1);
+
+        when(repository.findById(1)).thenReturn(catalog);
+        when(repository.deleteById(1)).thenReturn(false);
+
+        Result<Catalog> result = service.deleteById(1);
+
+        assertEquals(ResultType.INVALID, result.getType());
+        assertTrue(result.getMessages().contains("Failed to delete catalog entry."));
+        verify(repository).findById(1);
+        verify(repository).deleteById(1);
     }
 
     private Catalog makeCatalog() {

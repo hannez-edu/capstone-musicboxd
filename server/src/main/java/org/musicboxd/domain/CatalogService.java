@@ -80,7 +80,30 @@ public class CatalogService {
         }
     }
 
-    public boolean deleteById(int catalogId) {return repository.deleteById(catalogId);}
+    public Result<Catalog> deleteById(int catalogId) {
+        Result<Catalog> result = new Result<>();
+
+        // First check if the catalog entry exists
+        Catalog existing = repository.findById(catalogId);
+        if (existing == null) {
+            result.addMessage("Catalog entry not found.", ResultType.NOT_FOUND);
+            return result;
+        }
+
+        try {
+            boolean deleted = repository.deleteById(catalogId);
+            if (!deleted) {
+                result.addMessage("Failed to delete catalog entry.", ResultType.INVALID);
+                return result;
+            }
+
+            result.setPayload(existing); // Return the deleted item
+            return result;
+        } catch (Exception e) {
+            result.addMessage("Database error: " + e.getMessage(), ResultType.INVALID);
+            return result;
+        }
+    }
 
     private Result<Catalog> validate(Catalog catalog) {
         Result<Catalog> result = new Result<>();
