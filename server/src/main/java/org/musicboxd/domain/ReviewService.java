@@ -2,6 +2,8 @@ package org.musicboxd.domain;
 
 import org.musicboxd.data.ReviewRepository;
 import org.musicboxd.models.Review;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,8 +36,15 @@ public class ReviewService {
             return result;
         }
 
-        Review added = repository.add(review);
-        result.setPayload(added);
+        try {
+            Review added = repository.add(review);
+            result.setPayload(added);
+        } catch (DuplicateKeyException ex) {
+            result.addMessage("User already has a review for the album.", ResultType.INVALID);
+        } catch (DataIntegrityViolationException ex) {
+            result.addMessage("User ID or album ID do not exist.", ResultType.NOT_FOUND);
+        }
+
         return result;
     }
 

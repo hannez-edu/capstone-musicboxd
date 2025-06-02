@@ -6,6 +6,8 @@ import org.musicboxd.models.Review;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 
 import java.util.List;
 
@@ -71,6 +73,26 @@ class ReviewServiceTest {
 
         assertEquals(ResultType.SUCCESS, result.getType());
         assertEquals(2, result.getPayload().getReviewId());
+    }
+
+    @Test
+    public void shouldNotAddWhenUserHasReview() {
+        when(repository.add(any())).thenThrow(new DuplicateKeyException(""));
+
+        Result<Review> result = service.add(makeReview());
+
+        assertEquals(ResultType.INVALID, result.getType());
+        assertTrue(result.getMessages().get(0).contains("already has a review"));
+    }
+
+    @Test
+    public void shouldNotAddWhenInvalidForeignKey() {
+        when(repository.add(any())).thenThrow(new DataIntegrityViolationException(""));
+
+        Result<Review> result = service.add(makeReview());
+
+        assertEquals(ResultType.NOT_FOUND, result.getType());
+        assertTrue(result.getMessages().get(0).contains("do not exist"));
     }
 
     /* Validation */
