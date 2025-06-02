@@ -115,6 +115,22 @@ class ReviewServiceTest {
         assertEquals(ResultType.NOT_FOUND, result.getType());
     }
 
+    /* DeleteById */
+
+    @Test
+    public void shouldDeleteById() {
+        when(repository.deleteById(anyInt())).thenReturn(true);
+
+        assertTrue(service.deleteById(1));
+    }
+
+    @Test
+    public void shouldNotDeleteNonexistent() {
+        when(repository.deleteById(anyInt())).thenReturn(false);
+
+        assertFalse(service.deleteById(1));
+    }
+
     /* Validation */
 
     @Test

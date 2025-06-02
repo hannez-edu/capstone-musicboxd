@@ -64,6 +64,10 @@ public class ReviewService {
         return result;
     }
 
+    public boolean deleteById(int reviewId) {
+        return repository.deleteById(reviewId);
+    }
+
     private Result<Review> validate(Review review) {
         Result<Review> result = new Result<>();
 
