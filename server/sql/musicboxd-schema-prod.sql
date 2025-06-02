@@ -6,7 +6,7 @@ create table users (
 user_id int auto_increment primary key,
 user_name varchar(100) not null,
 email varchar(255) unique not null,
-password_hash varchar(50) not null,
+password_hash varchar(248) not null,
 first_name varchar(50) null,
 last_name varchar(50) null
 );
