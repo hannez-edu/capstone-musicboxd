@@ -115,6 +115,37 @@ class ReviewServiceTest {
         assertEquals(ResultType.NOT_FOUND, result.getType());
     }
 
+    /* UpdateLike */
+
+    @Test
+    public void shouldUpdateLikeByAddingLike() {
+        when(repository.updateLike(anyInt(), anyInt())).thenReturn(true);
+
+        Result<Boolean> result = service.updateLike(1, 1);
+
+        assertEquals(ResultType.SUCCESS, result.getType());
+        assertTrue(result.getPayload());
+    }
+
+    @Test
+    public void shouldUpdateLikeByRemovingLike() {
+        when(repository.updateLike(anyInt(), anyInt())).thenReturn(false);
+
+        Result<Boolean> result = service.updateLike(1, 1);
+
+        assertEquals(ResultType.SUCCESS, result.getType());
+        assertFalse(result.getPayload());
+    }
+
+    @Test
+    public void shouldNotUpdateLikeForBadUserOrReview() {
+        when(repository.updateLike(anyInt(), anyInt())).thenThrow(new DataIntegrityViolationException(""));
+
+        Result<Boolean> result = service.updateLike(1, 1);
+
+        assertEquals(ResultType.NOT_FOUND, result.getType());
+    }
+
     /* DeleteById */
 
     @Test

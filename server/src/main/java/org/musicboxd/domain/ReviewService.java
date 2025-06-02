@@ -68,6 +68,18 @@ public class ReviewService {
         return repository.deleteById(reviewId);
     }
 
+    public Result<Boolean> updateLike(int reviewId, int currentUserId) {
+        Result<Boolean> result = new Result<>();
+
+        try {
+            result.setPayload(repository.updateLike(reviewId, currentUserId));
+        } catch (DataIntegrityViolationException ex) {
+            result.addMessage("User ID or review do not exist.", ResultType.NOT_FOUND);
+        }
+
+        return result;
+    }
+
     private Result<Review> validate(Review review) {
         Result<Review> result = new Result<>();
 
