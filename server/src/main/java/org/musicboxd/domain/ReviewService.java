@@ -22,4 +22,8 @@ public class ReviewService {
     public Review findById(int reviewId, int currentUserId) {
         return repository.findById(reviewId, currentUserId);
     }
+
+    public List<Review> findByUserId(int reviewerId, int currentUserId) {
+        return repository.findByUserId(reviewerId, currentUserId);
+    }
 }

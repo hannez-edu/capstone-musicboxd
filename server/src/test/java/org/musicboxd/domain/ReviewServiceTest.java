@@ -45,6 +45,18 @@ class ReviewServiceTest {
         assertNotNull(review);
     }
 
+    /* FindByUserId */
+
+    @Test
+    public void shouldFindByUserId() {
+        when(repository.findByUserId(anyInt(), anyInt())).thenReturn(List.of(makeReview(), makeReview()));
+
+        List<Review> all = service.findByUserId(1, 1);
+
+        assertNotNull(all);
+        assertEquals(2, all.size());
+    }
+
     private Review makeReview() {
         Review review = new Review();
         review.setReviewId(1);
