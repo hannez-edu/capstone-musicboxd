@@ -167,6 +167,28 @@ class ReviewJdbcTemplateRepositoryTest {
         assertFalse(repository.deleteById(99999));
     }
 
+    /* UpdateLike */
+
+    @Test
+    public void shouldUpdateLikeByAddingLike() {
+        assertTrue(repository.updateLike(2, 2));
+
+        Review review = repository.findById(2, 2);
+
+        assertNotNull(review);
+        assertTrue(review.isLikedByCurrentUser());
+    }
+
+    @Test
+    public void shouldUpdateByRemovingLike() {
+        assertFalse(repository.updateLike(2, 3));
+
+        Review review = repository.findById(2, 3);
+
+        assertNotNull(review);
+        assertFalse(review.isLikedByCurrentUser());
+    }
+
     /*
     Join Tests
 

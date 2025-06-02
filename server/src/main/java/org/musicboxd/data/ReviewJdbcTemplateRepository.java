@@ -123,8 +123,25 @@ public class ReviewJdbcTemplateRepository implements ReviewRepository {
     }
 
     @Override
+    @Transactional
     public boolean updateLike(int reviewId, int userId) {
-        return false;
+        final String likedSql = "select review_like_id " +
+                "from review_likes " +
+                "where user_id = ? and review_id = ?;";
+
+        int reviewLikesId = jdbcTemplate.query(likedSql, (resultSet, i) -> resultSet.getInt("review_like_id"), userId, reviewId)
+                .stream().findFirst().orElse(0);
+
+        if (reviewLikesId == 0) {
+            // Review is not liked and a new entry must be created
+            final String sql = "insert into review_likes (user_id, review_id) values (?,?);";
+            jdbcTemplate.update(sql, userId, reviewId);
+            return true;
+        } else {
+            // Review is liked and entry should be deleted
+            jdbcTemplate.update("delete from review_likes where review_like_id = ?;", reviewLikesId);
+            return false;
+        }
     }
 
     private void joinUser(Review review) {
