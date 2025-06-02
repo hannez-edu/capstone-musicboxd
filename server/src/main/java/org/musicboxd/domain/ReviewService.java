@@ -48,6 +48,22 @@ public class ReviewService {
         return result;
     }
 
+    public Result<Review> update(Review review) {
+        Result<Review> result = validate(review);
+
+        if (result.getType() != ResultType.SUCCESS) {
+            return result;
+        }
+
+        if (repository.update(review)) {
+            result.setPayload(review);
+        } else {
+            result.addMessage("Could not find review.", ResultType.NOT_FOUND);
+        }
+
+        return result;
+    }
+
     private Result<Review> validate(Review review) {
         Result<Review> result = new Result<>();
 

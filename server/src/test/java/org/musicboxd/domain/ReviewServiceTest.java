@@ -95,6 +95,26 @@ class ReviewServiceTest {
         assertTrue(result.getMessages().get(0).contains("do not exist"));
     }
 
+    /* Update */
+
+    @Test
+    public void shouldUpdate() {
+        when(repository.update(any())).thenReturn(true);
+
+        Result<Review> result = service.update(makeReview());
+
+        assertEquals(ResultType.SUCCESS, result.getType());
+    }
+
+    @Test
+    public void shouldNotUpdateNonexistent() {
+        when(repository.update(any())).thenReturn(false);
+
+        Result<Review> result = service.update(makeReview());
+
+        assertEquals(ResultType.NOT_FOUND, result.getType());
+    }
+
     /* Validation */
 
     @Test
@@ -166,6 +186,80 @@ class ReviewServiceTest {
         bad.setStars(6);
 
         Result<Review> result = service.add(bad);
+
+        assertEquals(ResultType.INVALID, result.getType());
+        assertTrue(result.getMessages().get(0).contains("between"));
+    }
+
+    @Test
+    public void shouldNotUpdateNullReview() {
+        Result<Review> result = service.update(null);
+
+        assertEquals(ResultType.INVALID, result.getType());
+        assertTrue(result.getMessages().get(0).contains("null"));
+    }
+
+    @Test
+    public void shouldNotUpdateBadUserId() {
+        Review bad = makeReview();
+        bad.setUserId(-1);
+
+        Result<Review> result = service.update(bad);
+
+        assertEquals(ResultType.INVALID, result.getType());
+        assertTrue(result.getMessages().get(0).contains("User ID"));
+    }
+
+    @Test
+    public void shouldNotUpdateBadAlbumId() {
+        Review bad = makeReview();
+        bad.setAlbumId(-1);
+
+        Result<Review> result = service.update(bad);
+
+        assertEquals(ResultType.INVALID, result.getType());
+        assertTrue(result.getMessages().get(0).contains("Album ID"));
+    }
+
+    @Test
+    public void shouldNotUpdateNullContent() {
+        Review bad = makeReview();
+        bad.setContent(null);
+
+        Result<Review> result = service.update(bad);
+
+        assertEquals(ResultType.INVALID, result.getType());
+        assertTrue(result.getMessages().get(0).contains("required"));
+    }
+
+    @Test
+    public void shouldNotUpdateEmptyContent() {
+        Review bad = makeReview();
+        bad.setContent(" ");
+
+        Result<Review> result = service.update(bad);
+
+        assertEquals(ResultType.INVALID, result.getType());
+        assertTrue(result.getMessages().get(0).contains("required"));
+    }
+
+    @Test
+    public void shouldNotUpdateLowStars() {
+        Review bad = makeReview();
+        bad.setStars(-1);
+
+        Result<Review> result = service.update(bad);
+
+        assertEquals(ResultType.INVALID, result.getType());
+        assertTrue(result.getMessages().get(0).contains("between"));
+    }
+
+    @Test
+    public void shouldNotUpdateHighStars() {
+        Review bad = makeReview();
+        bad.setStars(6);
+
+        Result<Review> result = service.update(bad);
 
         assertEquals(ResultType.INVALID, result.getType());
         assertTrue(result.getMessages().get(0).contains("between"));
