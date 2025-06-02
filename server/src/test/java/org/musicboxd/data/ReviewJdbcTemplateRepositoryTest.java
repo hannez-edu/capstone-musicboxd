@@ -141,6 +141,32 @@ class ReviewJdbcTemplateRepositoryTest {
         assertEquals(3, updated.getStars());
     }
 
+    @Test
+    public void shouldNotUpdateNonexistent() {
+        Review review = new Review();
+        review.setReviewId(99999);
+        review.setStars(3);
+        review.setContent("Updated");
+
+        assertFalse(repository.update(review));
+    }
+
+    /* DeleteById */
+
+    @Test
+    public void shouldDeleteById() {
+        assertTrue(repository.deleteById(5));
+
+        Review nonexistent = repository.findById(5, 0);
+
+        assertNull(nonexistent);
+    }
+
+    @Test
+    public void shouldNotDeleteNonexistent() {
+        assertFalse(repository.deleteById(99999));
+    }
+
     /*
     Join Tests
 

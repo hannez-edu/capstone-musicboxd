@@ -116,8 +116,10 @@ public class ReviewJdbcTemplateRepository implements ReviewRepository {
     }
 
     @Override
+    @Transactional
     public boolean deleteById(int reviewId) {
-        return false;
+        jdbcTemplate.update("delete from review_likes where review_id = ?;", reviewId);
+        return jdbcTemplate.update("delete from reviews where review_id = ?;", reviewId) > 0;
     }
 
     @Override
