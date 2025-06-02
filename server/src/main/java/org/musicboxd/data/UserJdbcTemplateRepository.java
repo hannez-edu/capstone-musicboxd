@@ -110,6 +110,8 @@ public class UserJdbcTemplateRepository implements UserRepository {
     // TODO: Might want some function to update the Roles for this user when we update/add the user *******************************************
         // Will implement this alongside the Security implementation.
 
+    // TODO: Might also want to add a means of adding a followed user for this user. *****
+
     // Should set the user's role list
     private void joinRole(User user) {
         RowMapper<UserRole> rowMapper = (rs, rowNum) -> UserRole.valueOf(rs.getString("name").toUpperCase());
