@@ -8,9 +8,6 @@ import org.musicboxd.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.text.DateFormat;
-import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -106,6 +103,25 @@ class ReviewJdbcTemplateRepositoryTest {
         List<Review> reviews = repository.findByUserId(99999, 0);
 
         assertNull(reviews);
+    }
+
+    /* Add */
+
+    @Test
+    public void shouldAdd() {
+        Review review = new Review();
+        review.setUserId(4);
+        review.setAlbumId(1);
+        review.setContent("New Review");
+        review.setStars(3);
+
+        Review actual = repository.add(review);
+
+        assertNotNull(actual);
+        assertEquals(6, actual.getReviewId());
+        assertEquals(1, actual.getAlbumId());
+        assertEquals("New Review", actual.getContent());
+        assertEquals(3, actual.getStars());
     }
 
     /*

@@ -7,9 +7,13 @@ import org.musicboxd.models.Album;
 import org.musicboxd.models.Review;
 import org.musicboxd.models.User;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.List;
 
 @Repository
@@ -81,7 +85,24 @@ public class ReviewJdbcTemplateRepository implements ReviewRepository {
 
     @Override
     public Review add(Review review) {
-        return null;
+        final String sql = "insert into reviews (album_id, user_id, content, stars) values (?,?,?,?);";
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        int rowsAffected = jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.setInt(1, review.getAlbumId());
+            ps.setInt(2, review.getUserId());
+            ps.setString(3, review.getContent());
+            ps.setInt(4, review.getStars());
+            return ps;
+        }, keyHolder);
+
+        if (rowsAffected <= 0 || keyHolder.getKey() == null) {
+            return null;
+        }
+
+        review.setReviewId(keyHolder.getKey().intValue());
+        return review;
     }
 
     @Override
