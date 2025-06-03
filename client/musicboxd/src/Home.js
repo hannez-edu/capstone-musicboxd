@@ -34,7 +34,7 @@ function Home() {
 
   return (
     <>
-      <h2 className="mt-3">Popular</h2>
+      <h2 className="mt-3 text-center">Popular</h2>
       <section className="container-fluid" id="popular">
         <div className="row justify-content-center">
           {popular.map(album => (
@@ -47,7 +47,7 @@ function Home() {
         </div>
       </section>
 
-      <h2 className="mt-3">Recently Listened</h2>
+      <h2 className="mt-3 text-center">Recently Listened</h2>
       <section className="container-fluid" id="recent">
         <div className="row justify-content-center">
           {recentAlbums.map(album => (
@@ -60,7 +60,7 @@ function Home() {
         </div>
       </section>
 
-      <h2 className="mt-3">Latest Reviews</h2>
+      <h2 className="mt-3 text-center">Latest Reviews</h2>
       <section className="container-fluid" id="listened">
         <div className="row justify-content-center">
           {latestReviewed.map(review => (

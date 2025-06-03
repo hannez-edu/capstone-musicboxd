@@ -4,6 +4,7 @@ import org.musicboxd.domain.Result;
 import org.musicboxd.domain.ResultType;
 import org.musicboxd.domain.UserService;
 import org.musicboxd.models.User;
+import org.musicboxd.models.UserRole;
 import org.musicboxd.security.JwtConverter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,7 +49,10 @@ public class UserController {
     // Might be able to enforce that the provided JSON from the client works to instantiate a User properly.
     // If not, we could probably re-instantiate within the UserService we pass the User to.
     @PostMapping("/register")
-    public ResponseEntity<Object> registerUser(@RequestBody User user) {
+    public ResponseEntity<Object> registerUser(@RequestBody Map<String, String> userData) {
+        User user = new User(0, userData.get("userName"), userData.get("password"), userData.get("email"),
+                userData.get("firstName"), userData.get("lastName"), List.of(UserRole.USER));
+
         Result<User> result = service.add(user);
 
         if (result.getType() == ResultType.SUCCESS) {
