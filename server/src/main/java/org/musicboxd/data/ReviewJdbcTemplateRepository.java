@@ -45,8 +45,8 @@ public class ReviewJdbcTemplateRepository implements ReviewRepository {
 
         if (review != null) {
             joinUser(review);
-            joinLikes(review);
-            joinLikedByCurrentUser(review, currentUserId);
+            joinLikes(review, jdbcTemplate);
+            joinLikedByCurrentUser(review, currentUserId, jdbcTemplate);
             joinAlbum(review);
         }
 
@@ -77,8 +77,8 @@ public class ReviewJdbcTemplateRepository implements ReviewRepository {
 
         for (Review review : reviews) {
             review.setUser(user);
-            joinLikes(review);
-            joinLikedByCurrentUser(review, currentUserId);
+            joinLikes(review, jdbcTemplate);
+            joinLikedByCurrentUser(review, currentUserId, jdbcTemplate);
             joinAlbum(review);
         }
 
@@ -161,7 +161,7 @@ public class ReviewJdbcTemplateRepository implements ReviewRepository {
         review.setUser(user);
     }
 
-    private void joinLikes(Review review) {
+    public static void joinLikes(Review review, JdbcTemplate jdbcTemplate) {
         final String sql = "select count(distinct user_id) as likes " +
                 "from review_likes " +
                 "where review_id = ? " +
@@ -173,7 +173,7 @@ public class ReviewJdbcTemplateRepository implements ReviewRepository {
         review.setLikes(likes);
     }
 
-    private void joinLikedByCurrentUser(Review review, int userId) {
+    public static void joinLikedByCurrentUser(Review review, int userId, JdbcTemplate jdbcTemplate) {
         if (userId == 0) {
             // 0 will be used for when there is no user id.
             // This means we skip the check for if the review was liked by the user
