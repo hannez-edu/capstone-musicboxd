@@ -1,32 +1,38 @@
-/*package org.musicboxd.security;
+package org.musicboxd.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final JwtConverter converter;
+    private final UserDetailsService userDetailsService;
+    private final PasswordEncoder passwordEncoder;
 
-    public SecurityConfig(JwtConverter converter) {
+    // @bk: Inject UserDetailsService and new separated PasswordEncoder
+    public SecurityConfig(JwtConverter converter,
+                          UserDetailsService userDetailsService,
+                          PasswordEncoder passwordEncoder) {
         this.converter = converter;
+        this.userDetailsService = userDetailsService;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    // TODO: This will probably need to be public so we can access it from UserService.
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable();
         http.cors();
 
         http.authorizeRequests()
-                // TODO: If we want specific endpoints to NOT require auth, add them here ****************************************
+                // TODO: If we want specific endpoints to NOT require auth, add them here w/ .permitAll() ****************************************Add commentMore actions
+                // TODO: If a particular role is required, use ".hasRole("ADMIN")" attached to the antMatcher()
                 .antMatchers("/api/user/authenticate").permitAll()
                 .antMatchers("/api/user/register").permitAll()
                 .anyRequest().authenticated()
@@ -34,6 +40,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilter(new JwtRequestFilter(authenticationManager(), converter))
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
+//        http.addFilterBefore(new JwtRequestFilter(authenticationManager(), converter), BasicAuthenticationFilter.class);
+
+        // Look into lazy annotation
+    }
+
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userDetailsService)
+                .passwordEncoder(passwordEncoder);
     }
 
     @Override
@@ -42,22 +58,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return super.authenticationManager();
     }
 
-    @Bean
-    public PasswordEncoder getEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurer() {
-            // Permit all paths & methods, restrict origins to localhost port 3000
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:3000")
-                        .allowedMethods("*");
-            }
-        };
-    }
+    // @bk: Removed getEncoder method and moved to PasswordEncoderConfig
+    // @bk: Removed corsConfigurer method and moved to WebMvcConfig
 }
-*/

@@ -1,9 +1,14 @@
 package org.musicboxd.models;
 
-import java.util.List;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-// TODO: This will need to extend Spring Security's "User" class to set username & password in that system during security implementation
-public class User {
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class User extends org.springframework.security.core.userdetails.User {
     private int userId;
     private String userName;
     private String password;
@@ -13,6 +18,31 @@ public class User {
     private List<UserRole> roles;
     private List<User> following;
     private List<User> followers;
+
+    // Minimally required information to register a User in our authentication scheme
+    public User(String userName, String password, List<UserRole> roles) {
+        super(userName, password, true, true, true, true, convertRolesToAuthorities(roles));
+        this.userName = userName;
+        this.password = password;
+        this.roles = roles;
+        this.following = new ArrayList<>();
+        this.followers = new ArrayList<>();
+    }
+
+    // Additional constructor for full user information
+    public User(int userId, String userName, String password, String email,
+                String firstName, String lastName, List<UserRole> roles) {
+        super(userName, password, true, true, true, true, convertRolesToAuthorities(roles));
+        this.userId = userId;
+        this.userName = userName;
+        this.password = password;
+        this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.roles = roles;
+        this.following = new ArrayList<>();
+        this.followers = new ArrayList<>();
+    }
 
     public int getUserId() {
         return userId;
@@ -80,5 +110,28 @@ public class User {
 
     public void setFollowers(List<User> followers) {
         this.followers = followers;
+    }
+
+    // Convert roles between forms we may need
+
+    public static List<GrantedAuthority> convertRolesToAuthorities(List<UserRole> roles) {
+        // Default role every user should have.
+        if (roles.isEmpty()) {
+            roles.add(UserRole.USER);
+        }
+
+        List<GrantedAuthority> authorities = new ArrayList<>(roles.size());
+
+        for (UserRole role : roles) {
+            authorities.add(new SimpleGrantedAuthority(role.toString()));
+        }
+
+        return authorities;
+    }
+
+    public static List<UserRole> convertAuthoritiesToRoles(Collection<GrantedAuthority> authorities) {
+        return authorities.stream()
+                .map(a -> UserRole.valueOf(a.getAuthority().substring("ROLE_".length())))
+                .collect(Collectors.toList());
     }
 }

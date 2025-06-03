@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.musicboxd.data.UserRepository;
 import org.musicboxd.models.User;
+import org.musicboxd.models.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -25,12 +26,10 @@ public class UserServiceTest {
 
     @BeforeEach
     void setup() {
-        testUser = new User();
-        testUser.setUserName("t3st1ng");
+        testUser = new User("t3st1ng", "passwd", List.of(UserRole.USER));
         testUser.setEmail("test@test.xyz");
         testUser.setFirstName("Test");
         testUser.setLastName("Testing");
-        testUser.setPassword("$2a$04$tbG2yzNQQKuCJUXFL7KI9.ew5CYuynkMg05YlVb3eoVVq4BLQir1i");
     }
 
     // findAll & findById are passthrough functions - already tested at the repository layer
@@ -59,12 +58,10 @@ public class UserServiceTest {
 
     @Test
     void shouldNotAddDuplicates() {
-        User existing = new User();
-        existing.setUserName("t3st1ng");
+        User existing = new User("t3st1ng", "passwd", List.of(UserRole.USER));
         existing.setEmail("test2@test.xyz");
         existing.setFirstName("Test 2");
         existing.setLastName("Testing 2");
-        existing.setPassword("$2a$04$tbG2yzNQQKuCJUXFL7KI9.ew5CYuynkMg05YlVb3eoVVq4BLQir1i");
 
         when(repository.findAll()).thenReturn(List.of(existing));
         Result<User> result = service.add(testUser); // Duplicate username!
@@ -102,13 +99,11 @@ public class UserServiceTest {
 
     @Test
     void shouldNotUpdateDuplicates() {
-        User existing = new User();
+        User existing = new User("t3st1ng", "passwd", List.of(UserRole.USER));
         existing.setUserId(1);
-        existing.setUserName("t3st1ng");
         existing.setEmail("test@test.xyz");
         existing.setFirstName("Test");
         existing.setLastName("Testing");
-        existing.setPassword("$2a$04$tbG2yzNQQKuCJUXFL7KI9.ew5CYuynkMg05YlVb3eoVVq4BLQir1i");
 
         when(repository.findAll()).thenReturn(List.of(existing));
         testUser.setUserId(2);
