@@ -54,7 +54,6 @@
         * [ ] NavBar (1.0hrs)
         * [ ] Album (1.0hrs)
         * [ ] Catalog (1.0hrs)
-        * [ ] Review (1.0hrs)
         * [ ] Login (1.0hrs)
         * [ ] Create Account (1.0hrs)
     * [ ] Integrate External API For Album Information Fetching (1.5hrs)
