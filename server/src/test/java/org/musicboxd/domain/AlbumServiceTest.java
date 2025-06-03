@@ -71,6 +71,22 @@ public class AlbumServiceTest {
         assertEquals(expected.getAlbumId(), result.getPayload().getAlbumId());
     }
 
+    /* DeleteById */
+
+    @Test
+    public void shouldDeleteById() {
+        when(repository.deleteById(anyInt())).thenReturn(true);
+
+        assertTrue(service.deleteById(1));
+    }
+
+    @Test
+    public void shouldNotDeleteNonexistentId() {
+        when(repository.deleteById(anyInt())).thenReturn(false);
+
+        assertFalse(service.deleteById(1));
+    }
+
     /* Validation */
 
     @Test

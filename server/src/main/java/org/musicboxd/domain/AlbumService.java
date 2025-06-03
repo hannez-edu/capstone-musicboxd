@@ -36,6 +36,10 @@ public class AlbumService {
         return result;
     }
 
+    public boolean deleteById(int albumId) {
+        return repository.deleteById(albumId);
+    }
+
     private Result<Album> validate(Album album) {
         Result<Album> result = new Result<>();
 
