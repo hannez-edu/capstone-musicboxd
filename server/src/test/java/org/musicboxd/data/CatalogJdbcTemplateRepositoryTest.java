@@ -11,7 +11,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
+@SpringBootTest
 public class CatalogJdbcTemplateRepositoryTest {
     @Autowired
     CatalogJdbcTemplateRepository repository;
@@ -20,7 +20,9 @@ public class CatalogJdbcTemplateRepositoryTest {
     KnownGoodState knownGoodState;
 
     @BeforeEach
-    void setUp() {knownGoodState.set();}
+    void setUp() {
+        knownGoodState.set();
+    }
 
     @Test
     void shouldFindAll() {
