@@ -85,7 +85,7 @@ public class ReviewController {
         }
     }
 
-    @PutMapping("/review={reviewId}&user={currentUserId}")
+    @PostMapping("/review={reviewId}&user={currentUserId}")
     public ResponseEntity<Object> updateLike(@PathVariable int reviewId, @PathVariable int currentUserId) {
         Result<Boolean> result = service.updateLike(reviewId, currentUserId);
 

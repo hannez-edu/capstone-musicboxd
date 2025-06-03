@@ -1,0 +1,87 @@
+@url = http://localhost:8080/api/reviews
+
+### findAll
+GET {{url}} HTTP/1.1
+
+### findById (GOOD)
+GET {{url}}/review=1&user=1 HTTP/1.1
+
+### findById (BAD)
+GET {{url}}/review=999&user=1 HTTP/1.1
+
+### findByUserId (GOOD)
+GET {{url}}/reviewer=2&user=1 HTTP/1.1
+
+### findByUserId (BAD)
+GET {{url}}/reviewer=999&user=1 HTTP/1.1
+
+### add (GOOD)
+POST {{url}} HTTP/1.1
+Content-Type: application/json
+
+{
+    "albumId": 9,
+    "userId": 1,
+    "content": "From Http",
+    "stars": 3
+}
+
+### add (missing user/album id)
+POST {{url}} HTTP/1.1
+Content-Type: application/json
+
+{
+    "content": "From Http",
+    "stars": 3
+}
+
+### add (bad content/stars)
+POST {{url}} HTTP/1.1
+Content-Type: application/json
+
+{
+    "albumId": 9,
+    "userId": 1,
+    "content": "",
+    "stars": 999
+}
+
+### update (GOOD)
+PUT {{url}}/9 HTTP/1.1
+Content-Type: application/json
+
+{
+    "reviewId": 9,
+    "albumId": 1,
+    "userId": 1,
+    "content": "Updated Http",
+    "stars": 3
+}
+
+### update (missing user/album id)
+PUT {{url}}/9 HTTP/1.1
+Content-Type: application/json
+
+{
+    "reviewId": 9,
+    "content": "From Http",
+    "stars": 3
+}
+
+### update (bad content/stars)
+PUT {{url}}/9 HTTP/1.1
+Content-Type: application/json
+
+{
+    "reviewId": 9,
+    "albumId": 9,
+    "userId": 1,
+    "content": "",
+    "stars": 999
+}
+
+### delete
+DELETE {{url}}/6 HTTP/1.1
+
+### updateLike (GOOD)
+POST {{url}}/review=1&user=1 HTTP/1.1

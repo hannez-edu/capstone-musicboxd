@@ -67,6 +67,8 @@ public class ReviewJdbcTemplateRepository implements ReviewRepository {
             return null;
         }
 
+        user.setPassword(null);
+
         final String reviewSql = "select review_id, album_id, user_id, `content`, stars " +
                 "from reviews " +
                 "where user_id = ?;";
