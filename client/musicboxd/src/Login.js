@@ -68,10 +68,10 @@ function Login() {
             <input className="form-control" type="text" id="username" name="username" value={credentials.username} onChange={handleChange} />
           </fieldset>
           <fieldset className="mb-3">
-            <label className="form-label" htmlFor="username">Password</label>
+            <label className="form-label" htmlFor="password">Password</label>
             <input className="form-control" type="password" id="password" name="password" value={credentials.password} onChange={handleChange} />
           </fieldset>
-          <button className="btn" type="submit" id="formSubmit">Submit</button>
+          <button className="btn" type="submit" id="formSubmit">Login</button>
           <Link className="btn float-end" to={`/register`}>Create New Account</Link>
         </form>
       </section>
