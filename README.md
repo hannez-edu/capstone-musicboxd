@@ -17,7 +17,7 @@
 * [ ] Backend Implementation
     * [x] Create Models (0.5hrs)
     * [ ] Data Layer
-        * [ ] AlbumRepository (0.75hrs)
+        * [x] AlbumRepository (0.75hrs)
         * [x] ReviewRepository (0.75hrs)
         * [ ] UserRepository (0.75hrs)
         * [ ] CatalogRepository (0.75hrs)
@@ -25,7 +25,7 @@
         * [x] DataException (0.25hrs)
     * [ ] Data Layer Tests (2.0hrs)
     * [ ] Domain Layer
-        * [ ] AlbumService (0.5hrs)
+        * [x] AlbumService (0.5hrs)
         * [x] ReviewService (0.5hrs)
         * [ ] UserService (0.5hrs)
         * [ ] CatalogService (0.5hrs)
@@ -33,7 +33,7 @@
         * [x] ResultType (0.1hrs)
     * [ ] Domain Layer Tests (1.5hrs)
     * [ ] Controller Layer
-        * [ ] AlbumController (0.75hrs)
+        * [x] AlbumController (0.75hrs)
         * [x] ReviewController (0.75hrs)
         * [ ] UserController (0.75hrs)
         * [ ] CatalogController (0.75hrs)
