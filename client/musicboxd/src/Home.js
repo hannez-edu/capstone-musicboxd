@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import AlbumReview from "./album/AlbumReview";
 
 // TODO: Clicking on an album should navigate the user to the page corresponding to that album.
@@ -9,7 +9,7 @@ import AlbumReview from "./album/AlbumReview";
 
 // For the purposes of the Home page, we ignore firstReleased
 const TEMP_ALBUM = {
-    title: "Test Album AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+    title: "Test Album",
     artist: "Artist",
     firstReleasedDate: "2020-01-01",
     artUrl: "https://picsum.photos/id/77/500/500"
@@ -39,12 +39,12 @@ function Home() {
         <div className="row justify-content-center">
           {popular.map(album => (
             <div className="col-2">
-              <div className="card">
+              <div className="card" onClick={() => console.log("TODO: Go to album")}>
                 <img className="card-img-top w-100" src={album === null || isEmptyString(album.artUrl) ? "" : album.artUrl} alt="Album cover"/>
                 <div className="card-body text-center">
-                  <h4 classname="text-center text-break">{album === null ? "loading title..." : album.title}</h4>
-                  <h5 classname="text-center text-break">{album === null ? "loading artist..." : album.artist}</h5>
-                  <a href="#" className="d-print-none stretched-link">Go somewhere</a>
+                  <h4 className="text-center text-break">{album === null ? "loading title..." : album.title}</h4>
+                  <h5 className="text-center text-break">{album === null ? "loading artist..." : album.artist}</h5>
+                  <a href="#" className="stretched-link"></a>
                 </div>
               </div>
             </div>
@@ -57,11 +57,12 @@ function Home() {
         <div className="row justify-content-center">
           {recentAlbums.map(album => (
             <div className="col-2">
-              <div className="card">
+              <div className="card" onClick={() => console.log("TODO: Go to album")}>
                 <img className="card-img-top w-100" src={album === null || isEmptyString(album.artUrl) ? "" : album.artUrl} alt="Album cover"/>
                 <div className="card-body text-center">
-                  <h4 classname="text-center">{album === null ? "loading title..." : album.title}</h4>
-                  <h5 classname="text-center">{album === null ? "loading artist..." : album.artist}</h5>
+                  <h4 className="text-center">{album === null ? "loading title..." : album.title}</h4>
+                  <h5 className="text-center">{album === null ? "loading artist..." : album.artist}</h5>
+                  <a href="#" className="stretched-link"></a>
                 </div>
               </div>
             </div>
@@ -74,9 +75,10 @@ function Home() {
         <div className="row justify-content-center">
           {latestReviewed.map(review => (
             <div className="col-5">
-              <div className="card">
+              <div className="card" onClick={() => console.log("TODO: Go to album")}>
                 <img className="card-img-top w-100" src={TEMP_ALBUM.artUrl} alt="Album cover"/>
                 <AlbumReview className="card-body" review={review} />
+                <a href="#" className="stretched-link"></a>
               </div>
             </div>
           ))}
