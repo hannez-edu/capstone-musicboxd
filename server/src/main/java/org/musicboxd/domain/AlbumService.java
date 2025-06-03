@@ -18,4 +18,10 @@ public class AlbumService {
     public List<Album> findAll() {
         return repository.findAll();
     }
+
+    public Album findById(int albumId, int currentUserId) {
+        return repository.findById(albumId, currentUserId);
+    }
+
+
 }

@@ -11,6 +11,7 @@ import java.sql.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
@@ -32,6 +33,26 @@ public class AlbumServiceTest {
 
         assertNotNull(all);
         assertEquals(2, all.size());
+    }
+
+    /* FindById */
+
+    @Test
+    public void shouldFindById() {
+        when(repository.findById(anyInt(), anyInt())).thenReturn(makeAlbum());
+
+        Album album = service.findById(1, 1);
+
+        assertNotNull(album);
+    }
+
+    @Test
+    public void shouldNotFindNonexistentId() {
+        when(repository.findById(anyInt(), anyInt())).thenReturn(null);
+
+        Album album = service.findById(1, 1);
+
+        assertNull(album);
     }
 
     private Album makeAlbum() {
