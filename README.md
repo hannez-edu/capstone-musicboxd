@@ -39,11 +39,11 @@
         * [X] CatalogController (0.75hrs)
         * [x] GlobalExceptionHandler (0.1hrs)
         * [x] ErrorResponse (0.1hrs)
-    * [X] Security Components
+    * [ ] Security Components
         * [X] JwtConveter (0.5hrs)
         * [X] SecurityConfig (0.5hrs)
         * [X] JwtRequestFilter (0.5hrs)
-        * [X] UserDetailsService (0.5hrs)
+        * [ ] Integrate Security Components into User (1.0hrs)
 * [ ] Frontend Implementation
     * [X] React Structure
         * [X] Create React Project (0.2hrs)
@@ -55,7 +55,6 @@
         * [ ] Album (1.0hrs)
         * [ ] Catalog (1.0hrs)
         * [ ] Review (1.0hrs)
-        * [ ] User (1.0hrs)
         * [ ] Login (1.0hrs)
         * [ ] Create Account (1.0hrs)
     * [ ] Integrate External API For Album Information Fetching (1.5hrs)
