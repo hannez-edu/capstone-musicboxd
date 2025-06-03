@@ -39,11 +39,11 @@
         * [X] CatalogController (0.75hrs)
         * [x] GlobalExceptionHandler (0.1hrs)
         * [x] ErrorResponse (0.1hrs)
-    * [ ] Security Components
+    * [X] Security Components
         * [X] JwtConveter (0.5hrs)
         * [X] SecurityConfig (0.5hrs)
         * [X] JwtRequestFilter (0.5hrs)
-        * [ ] Integrate Security Components into User (1.0hrs)
+        * [X] Integrate Security Components into User (1.0hrs)
 * [ ] Frontend Implementation
     * [X] React Structure
         * [X] Create React Project (0.2hrs)
