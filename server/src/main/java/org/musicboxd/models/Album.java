@@ -6,7 +6,6 @@ import java.util.List;
 public class Album {
     private int albumId;
     private String artist;
-    private String id;
     private String title;
     private Date firstReleaseDate;
     private String artUrl;
@@ -26,14 +25,6 @@ public class Album {
 
     public void setArtist(String artist) {
         this.artist = artist;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public Date getFirstReleaseDate() {

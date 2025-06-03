@@ -7,9 +7,9 @@ import java.util.List;
 public interface ReviewRepository {
     public List<Review> findAll();
 
-    public Review findById(int reviewId);
+    public Review findById(int reviewId, int currentUserId);
 
-    public List<Review> findByUserId(int userId);
+    public List<Review> findByUserId(int reviewerId, int currentUserId);
 
     public Review add(Review review);
 
