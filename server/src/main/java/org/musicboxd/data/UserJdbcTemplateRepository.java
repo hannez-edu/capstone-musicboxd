@@ -107,10 +107,14 @@ public class UserJdbcTemplateRepository implements UserRepository {
         return jdbcTemplate.update("delete from users where user_id = ?;", userId) > 0;
     }
 
-    // TODO: Might want some function to update the Roles for this user when we update/add the user *******************************************
-        // Will implement this alongside the Security implementation.
+    // Domain layer ensures that the userId we're trying to follow actually exists.
+    // Duplicate & self-follows are protected by the DB itself.
+    public boolean followUserById(User user, int userId) {
+        final String sql = "insert into following (follower_id, followed_id) "
+                + "values (?,?);";
 
-    // TODO: Might also want to add a means of adding a followed user for this user. *****
+        return jdbcTemplate.update(sql, user.getUserId(), userId) > 0;
+    }
 
     // Should set the user's role list
     private void joinRole(User user) {

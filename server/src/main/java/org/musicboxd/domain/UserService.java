@@ -2,17 +2,23 @@ package org.musicboxd.domain;
 
 import org.musicboxd.data.UserRepository;
 import org.musicboxd.models.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-// TODO: When implementing security, this should also implement UserDetailService's required methods.
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
     private final UserRepository repository;
+    // Authentication
+    private final PasswordEncoder encoder;
 
-    public UserService(UserRepository repository) {
+    public UserService(UserRepository repository, PasswordEncoder encoder) {
         this.repository = repository;
+        this.encoder = encoder;
     }
 
     public List<User> findAll() {
@@ -30,6 +36,9 @@ public class UserService {
         if (!result.getMessages().isEmpty()) {
             return result;
         }
+
+        // Encode the user's password for storage
+        user.setPassword(encoder.encode(user.getPassword()));
 
         User added = repository.add(user);
         if (added == null) {
@@ -61,6 +70,22 @@ public class UserService {
 
         if (!repository.deleteById(userId)) {
             result.addMessage(String.format("User with ID %s does not exist!", userId), ResultType.NOT_FOUND);
+        }
+
+        return result;
+    }
+
+    public Result<User> followUserById(User user, int userId) {
+        Result<User> result = new Result<>();
+
+        // User we want to follow doesn't exist!
+        if (!findAll().stream().anyMatch(u -> u.getUserId() == userId)) {
+            result.addMessage(String.format("User with ID %s does not exist!", user.getUserId()), ResultType.NOT_FOUND);
+            return result;
+        }
+
+        if (!repository.followUserById(user, userId)) {
+            result.addMessage("Could not follow requested user!", ResultType.INVALID);
         }
 
         return result;
@@ -112,5 +137,21 @@ public class UserService {
 
     private boolean isNullOrBlank(String str) {
         return str == null || str.isBlank();
+    }
+
+    // AUTHENTICATION
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = findAll().stream()
+                .filter(u -> u.getUserName().equals(username))
+                .findFirst()
+                .orElse(null);
+
+        if (user == null) {
+            throw new UsernameNotFoundException(username + "not found!");
+        }
+
+        return user;
     }
 }
