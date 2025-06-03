@@ -18,7 +18,7 @@
     * [x] Create Models (0.5hrs)
     * [ ] Data Layer
         * [ ] AlbumRepository (0.75hrs)
-        * [ ] ReviewRepository (0.75hrs)
+        * [x] ReviewRepository (0.75hrs)
         * [ ] UserRepository (0.75hrs)
         * [ ] CatalogRepository (0.75hrs)
         * [x] Mappers (0.5hrs)
@@ -26,7 +26,7 @@
     * [ ] Data Layer Tests (2.0hrs)
     * [ ] Domain Layer
         * [ ] AlbumService (0.5hrs)
-        * [ ] ReviewService (0.5hrs)
+        * [x] ReviewService (0.5hrs)
         * [ ] UserService (0.5hrs)
         * [ ] CatalogService (0.5hrs)
         * [x] Result (0.1hrs)
@@ -34,7 +34,7 @@
     * [ ] Domain Layer Tests (1.5hrs)
     * [ ] Controller Layer
         * [ ] AlbumController (0.75hrs)
-        * [ ] ReviewController (0.75hrs)
+        * [x] ReviewController (0.75hrs)
         * [ ] UserController (0.75hrs)
         * [ ] CatalogController (0.75hrs)
         * [x] GlobalExceptionHandler (0.1hrs)
