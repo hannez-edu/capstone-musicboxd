@@ -63,7 +63,7 @@ public class AlbumJdbcTemplateRepositoryTest {
 
     @Test
     public void shouldJoinReviews() {
-        Album album = repository.findById(1, 0);
+        Album album = repository.findById(2, 0);
 
         assertNotNull(album);
 
@@ -74,9 +74,9 @@ public class AlbumJdbcTemplateRepositoryTest {
 
         Review review = reviews.get(0);
 
-        assertEquals("Proin leo odio, porttitor id, consequat in, consequat ut, nulla. Sed accumsan felis. Ut at dolor quis odio consequat varius. Integer ac leo. Pellentesque ultrices mattis odio. Donec vitae nisi. Nam ultrices, libero non mattis pulvinar, nulla pede ullamcorper augue, a suscipit nulla elit ac nulla. Sed vel enim sit amet nunc viverra dapibus. Nulla suscipit ligula in lacus.", review.getContent());
-        assertEquals(4, review.getStars());
-        assertEquals(3, review.getLikes());
+        assertEquals("Nullam molestie nibh in lectus. Pellentesque at nulla.", review.getContent());
+        assertEquals(5, review.getStars());
+        assertEquals(1, review.getLikes());
         assertFalse(review.isLikedByCurrentUser());
         assertNotNull(review.getUser());
     }
