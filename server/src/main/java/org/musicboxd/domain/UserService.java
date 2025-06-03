@@ -31,6 +31,11 @@ public class UserService {
             return result;
         }
 
+        User added = repository.add(user);
+        if (added == null) {
+            result.addMessage("Add failed!", ResultType.INVALID);
+        }
+
         result.setPayload(user);
         return result;
     }

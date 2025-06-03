@@ -1,0 +1,35 @@
+@url = http://localhost:8080/api/user
+
+### Get All Users
+GET {{url}} HTTP/1.1
+
+### Get Specific User
+GET {{url}}/1 HTTP/1.1
+
+### Create User
+POST {{url}} HTTP/1.1
+Content-Type: application/json
+
+{
+    "userName": "t3st1ng",
+    "password": "$2a$04$tbG2yzNQQKuCJUXFL7KI9.ew5CYuynkMg05YlVb3eoVVq4BLQir1i",
+    "email": "tested@test.org",
+    "firstName": "Tested",
+    "lastName": "Testing"
+}
+
+### Update User
+PUT {{url}}/1 HTTP/1.1
+Content-Type: application/json
+
+{
+    "userId": 1,
+    "userName": "t3st",
+    "password": "$2a$04$tbG2yzNQQKuCJUXFL7KI9.ew5CYuynkMg05YlVb3eoVVq4BLQir1i",
+    "email": "test@test.org",
+    "firstName": "Test",
+    "lastName": "Testing"
+}
+
+### Delete User
+DELETE {{url}}/1 HTTP/1.1
