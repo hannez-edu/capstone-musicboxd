@@ -65,13 +65,13 @@ public class UserServiceTest {
 
         when(repository.findAll()).thenReturn(List.of(existing));
         Result<User> result = service.add(testUser); // Duplicate username!
-        assertTrue(result.getMessages().isEmpty());
+        assertFalse(result.getMessages().isEmpty());
 
         testUser.setUserName("Something Else");
         testUser.setEmail("test2@test.xyz");
 
         result = service.add(testUser); // Duplicate email!
-        assertTrue(result.getMessages().isEmpty());
+        assertFalse(result.getMessages().isEmpty());
     }
 
     @Test
