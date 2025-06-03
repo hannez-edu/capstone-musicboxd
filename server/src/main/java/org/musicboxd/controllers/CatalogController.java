@@ -54,8 +54,6 @@ public class CatalogController {
 
         if (result.getType() == ResultType.SUCCESS) {
             return ResponseEntity.ok(result.getPayload());
-        } else if (result.getType() == ResultType.NOT_FOUND) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return ErrorResponse.build(result);
     }
@@ -66,8 +64,6 @@ public class CatalogController {
 
         if (result.getType() == ResultType.SUCCESS) {
             return ResponseEntity.ok(result.getPayload());
-        } else if (result.getType() == ResultType.NOT_FOUND) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return ErrorResponse.build(result);
     }

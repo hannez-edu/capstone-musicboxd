@@ -75,7 +75,15 @@ public class CatalogService {
             result.setPayload(catalog);
             return result;
         } catch (Exception e) {
-            result.addMessage("Database error: " + e.getMessage(), ResultType.INVALID);
+            if (e.getMessage().contains("unique_user_album")) {
+                result.addMessage("Cannot update: This would create a duplicate entry for this user and album.", ResultType.INVALID);
+            } else if (e.getMessage().contains("fk_catalog_entry_user")) {
+                result.addMessage("User does not exist.", ResultType.INVALID);
+            } else if (e.getMessage().contains("fk_catalog_entry_album")) {
+                result.addMessage("Album does not exist.", ResultType.INVALID);
+            } else {
+                result.addMessage("Database error: " + e.getMessage(), ResultType.INVALID);
+            }
             return result;
         }
     }
@@ -83,7 +91,13 @@ public class CatalogService {
     public Result<Catalog> deleteById(int catalogId) {
         Result<Catalog> result = new Result<>();
 
-        // First check if the catalog entry exists
+        // Validate catalog ID
+        if (catalogId <= 0) {
+            result.addMessage("Catalog entry ID must be greater than 0.", ResultType.INVALID);
+            return result;
+        }
+
+        // Check if the catalog entry exists first
         Catalog existing = repository.findById(catalogId);
         if (existing == null) {
             result.addMessage("Catalog entry not found.", ResultType.NOT_FOUND);
@@ -97,7 +111,7 @@ public class CatalogService {
                 return result;
             }
 
-            result.setPayload(existing); // Return the deleted item
+            result.setPayload(existing); // Return the deleted catalog entry
             return result;
         } catch (Exception e) {
             result.addMessage("Database error: " + e.getMessage(), ResultType.INVALID);
