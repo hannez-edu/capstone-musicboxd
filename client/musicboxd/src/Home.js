@@ -44,6 +44,7 @@ function Home() {
                 <div className="card-body text-center">
                   <h4 classname="text-center text-break">{album === null ? "loading title..." : album.title}</h4>
                   <h5 classname="text-center text-break">{album === null ? "loading artist..." : album.artist}</h5>
+                  <a href="#" className="d-print-none stretched-link">Go somewhere</a>
                 </div>
               </div>
             </div>
