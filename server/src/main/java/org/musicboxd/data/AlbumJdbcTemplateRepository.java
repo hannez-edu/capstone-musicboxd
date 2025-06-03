@@ -5,9 +5,13 @@ import org.musicboxd.models.Album;
 import org.musicboxd.models.Review;
 import org.musicboxd.models.User;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.List;
 
 @Repository
@@ -45,7 +49,24 @@ public class AlbumJdbcTemplateRepository implements AlbumRepository {
 
     @Override
     public Album add(Album album) {
-        return null;
+        final String sql = "insert into albums (artist, title, release_date, art_url) values (?,?,?,?);";
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        int rowsAffected = jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            ps.setString(1, album.getArtist());
+            ps.setString(2, album.getTitle());
+            ps.setDate(3, new java.sql.Date(album.getFirstReleaseDate().getTime()));
+            ps.setString(4, album.getArtUrl());
+            return ps;
+        }, keyHolder);
+
+        if (rowsAffected <= 0 || keyHolder.getKey() == null) {
+            return null;
+        }
+
+        album.setAlbumId(keyHolder.getKey().intValue());
+        return album;
     }
 
     @Override

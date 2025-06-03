@@ -7,6 +7,7 @@ import org.musicboxd.models.Review;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -88,5 +89,24 @@ public class AlbumJdbcTemplateRepositoryTest {
         assertNotNull(album);
         assertNotNull(album.getReviews());
         assertEquals(0, album.getReviews().size());
+    }
+
+    /* Add */
+
+    @Test
+    public void shouldAdd() {
+        Album expected = new Album();
+        expected.setTitle("New Album");
+        expected.setArtUrl("URL");
+        expected.setArtist("Artist");
+        expected.setFirstReleaseDate(new Date());
+
+        Album actual = repository.add(expected);
+
+        assertNotNull(actual);
+        assertEquals(21, actual.getAlbumId());
+        assertEquals(expected.getTitle(), actual.getTitle());
+        assertEquals(expected.getArtUrl(), actual.getArtUrl());
+        assertEquals(expected.getArtist(), actual.getArtist());
     }
 }
