@@ -103,7 +103,7 @@ public class AlbumJdbcTemplateRepository implements AlbumRepository {
             user.setUserName(resultSet.getString("user_name"));
 
             review.setUser(user);
-            review.setAlbum(album);
+            review.setAlbum(null);
             review.setAlbumId(album.getAlbumId());
 
             ReviewJdbcTemplateRepository.joinLikes(review, jdbcTemplate);
