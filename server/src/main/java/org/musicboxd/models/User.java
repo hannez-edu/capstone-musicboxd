@@ -22,6 +22,26 @@ public class User extends org.springframework.security.core.userdetails.User {
     // Minimally required information to register a User in our authentication scheme
     public User(String userName, String password, List<UserRole> roles) {
         super(userName, password, true, true, true, true, convertRolesToAuthorities(roles));
+        this.userName = userName;
+        this.password = password;
+        this.roles = roles;
+        this.following = new ArrayList<>();
+        this.followers = new ArrayList<>();
+    }
+
+    // Additional constructor for full user information
+    public User(int userId, String userName, String password, String email,
+                String firstName, String lastName, List<UserRole> roles) {
+        super(userName, password, true, true, true, true, convertRolesToAuthorities(roles));
+        this.userId = userId;
+        this.userName = userName;
+        this.password = password;
+        this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.roles = roles;
+        this.following = new ArrayList<>();
+        this.followers = new ArrayList<>();
     }
 
     public int getUserId() {
