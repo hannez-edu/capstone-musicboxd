@@ -69,15 +69,10 @@ public class CatalogJdbcTemplateRepository implements CatalogRepository {
 
     @Override
     public boolean update(Catalog catalog) {
-        final String sql = "update catalog_entry set " +
-                "user_id = ?, " +
-                "album_id = ?, " +
-                "status = ? " +
-                "where catalog_entry_id = ?;";
+        // Only allow status updates to avoid unique constraint issues
+        final String sql = "update catalog_entry set status = ? where catalog_entry_id = ?;";
 
         return jdbcTemplate.update(sql,
-                catalog.getUserId(),
-                catalog.getAlbumId(),
                 catalog.getStatus().name(),
                 catalog.getCatalogEntryId()) > 0;
     }
