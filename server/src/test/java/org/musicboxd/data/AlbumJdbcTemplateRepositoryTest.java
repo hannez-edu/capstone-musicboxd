@@ -30,7 +30,6 @@ public class AlbumJdbcTemplateRepositoryTest {
     Test Plan
 
     Album id 1 will not be changed.
-    Album id 2 will be edited.
     Album id 3 will be deleted.
 
     There may be more albums.
@@ -108,5 +107,17 @@ public class AlbumJdbcTemplateRepositoryTest {
         assertEquals(expected.getTitle(), actual.getTitle());
         assertEquals(expected.getArtUrl(), actual.getArtUrl());
         assertEquals(expected.getArtist(), actual.getArtist());
+    }
+
+    /* DeleteById */
+
+    @Test
+    public void shouldDeleteById() {
+        assertTrue(repository.deleteById(3));
+    }
+
+    @Test
+    public void shouldNotDeleteNonexistentId() {
+        assertFalse(repository.deleteById(999999));
     }
 }

@@ -1,6 +1,7 @@
 package org.musicboxd.data;
 
 import org.musicboxd.data.mappers.AlbumMapper;
+import org.musicboxd.data.mappers.ReviewMapper;
 import org.musicboxd.models.Album;
 import org.musicboxd.models.Review;
 import org.musicboxd.models.User;
@@ -70,8 +71,18 @@ public class AlbumJdbcTemplateRepository implements AlbumRepository {
     }
 
     @Override
+    @Transactional
     public boolean deleteById(int albumId) {
-        return false;
+        jdbcTemplate.update("delete from catalog_entry where album_id = ?;", albumId);
+
+        List<Review> reviews = jdbcTemplate.query("select review_id, album_id, user_id, content, stars from reviews where album_id = ?;", new ReviewMapper(), albumId);
+
+        for (Review review : reviews) {
+            jdbcTemplate.update("delete from review_likes where review_id = ?;", review.getReviewId());
+            jdbcTemplate.update("delete from reviews where review_id = ?;", review.getReviewId());
+        }
+
+        return jdbcTemplate.update("delete from albums where album_id = ?;", albumId) > 0;
     }
 
     private void joinReviews(Album album, int currentUserId) {
