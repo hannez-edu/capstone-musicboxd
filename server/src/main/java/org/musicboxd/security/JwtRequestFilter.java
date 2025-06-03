@@ -1,5 +1,5 @@
 package org.musicboxd.security;
-
+/*
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -39,3 +39,4 @@ public class JwtRequestFilter extends BasicAuthenticationFilter {
         chain.doFilter(request, response);
     }
 }
+*/

@@ -1,4 +1,4 @@
-package org.musicboxd.security;
+/*package org.musicboxd.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -60,3 +60,4 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         };
     }
 }
+*/
