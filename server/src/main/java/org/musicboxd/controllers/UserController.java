@@ -4,11 +4,18 @@ import org.musicboxd.domain.Result;
 import org.musicboxd.domain.ResultType;
 import org.musicboxd.domain.UserService;
 import org.musicboxd.models.User;
+import org.musicboxd.security.JwtConverter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @CrossOrigin(origins = {"http://localhost:3000"})
@@ -16,8 +23,14 @@ import java.util.List;
 public class UserController {
     private final UserService service;
 
-    public UserController(UserService service) {
+    // Security Components
+    private final AuthenticationManager authenticationManager;
+    private final JwtConverter converter;
+
+    public UserController(UserService service, AuthenticationManager authenticationManager, JwtConverter converter) {
         this.service = service;
+        this.authenticationManager = authenticationManager;
+        this.converter = converter;
     }
 
     @GetMapping
@@ -30,8 +43,12 @@ public class UserController {
         return service.findById(userId);
     }
 
-    @PostMapping
-    public ResponseEntity<Object> add(@RequestBody User user) {
+    // TODO: We need to ensure that whatever information is passed in is enough to instantiate a User object as it is in the User class.
+    // With the new restrictions added by extending UserDetails, we need to be more careful with how we instantiate a User.
+    // Might be able to enforce that the provided JSON from the client works to instantiate a User properly.
+    // If not, we could probably re-instantiate within the UserService we pass the User to.
+    @PostMapping("/register")
+    public ResponseEntity<Object> registerUser(@RequestBody User user) {
         Result<User> result = service.add(user);
 
         if (result.getType() == ResultType.SUCCESS) {
@@ -55,6 +72,7 @@ public class UserController {
         return ErrorResponse.build(result);
     }
 
+    // TODO: This should be restricted to the ADMIN role (authentication differentiation between different roles has not been added yet... Very easy to do so though.)
     @DeleteMapping("{userId}")
     public ResponseEntity<Void> deleteById(@PathVariable int userId) {
         Result<User> result = service.deleteById(userId);
@@ -63,5 +81,33 @@ public class UserController {
         }
 
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    // AUTHENTICATION
+
+    // This is the "login" request - we log in to retrieve our JWT token to be used in any mappings that require authentication.
+    // Here, we only want the username & password for authentication.
+    @PostMapping("/authenticate")
+    public ResponseEntity<Map<String, String>> authenticate(@RequestBody Map<String, String> credentials) {
+        UsernamePasswordAuthenticationToken authToken =
+                new UsernamePasswordAuthenticationToken(credentials.get("username"), credentials.get("password"));
+
+        try {
+            Authentication authentication = authenticationManager.authenticate(authToken);
+
+            if (authentication.isAuthenticated()) {
+                String jwtToken = converter.getTokenFromUser((org.springframework.security.core.userdetails.User) authentication.getPrincipal());
+
+                HashMap<String, String> map = new HashMap<>();
+                map.put("jwt_token", jwtToken);
+
+                // Return the generated JWT Token to the client for future authentication requests
+                return new ResponseEntity<>(map, HttpStatus.OK);
+            }
+        } catch (AuthenticationException e) {
+            System.out.println(e);
+        }
+
+        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
 }

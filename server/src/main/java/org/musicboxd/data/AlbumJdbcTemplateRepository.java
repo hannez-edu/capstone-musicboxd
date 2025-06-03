@@ -41,9 +41,9 @@ public class AlbumJdbcTemplateRepository implements AlbumRepository {
         Album album = jdbcTemplate.query(sql, new AlbumMapper(), albumId)
                 .stream().findFirst().orElse(null);
 
-        if (album != null) {
-            joinReviews(album, currentUserId);
-        }
+//        if (album != null) {
+//            joinReviews(album, currentUserId);
+//        }
 
         return album;
     }
@@ -85,33 +85,33 @@ public class AlbumJdbcTemplateRepository implements AlbumRepository {
         return jdbcTemplate.update("delete from albums where album_id = ?;", albumId) > 0;
     }
 
-    private void joinReviews(Album album, int currentUserId) {
-        final String reviewSql = "select r.user_id, r.review_id, r.stars, r.content, u.user_name " +
-                "from albums as a " +
-                "inner join reviews r on a.album_id = r.album_id " +
-                "inner join users u on r.user_id = u.user_id " +
-                "where a.album_id = ?;";
-
-        List<Review> reviews = jdbcTemplate.query(reviewSql, (resultSet, i) -> {
-            Review review = new Review();
-            review.setReviewId(resultSet.getInt("review_id"));
-            review.setContent(resultSet.getString("content"));
-            review.setStars(resultSet.getInt("stars"));
-
-            User user = new User();
-            user.setUserId(resultSet.getInt("user_id"));
-            user.setUserName(resultSet.getString("user_name"));
-
-            review.setUser(user);
-            review.setAlbum(null);
-            review.setAlbumId(album.getAlbumId());
-
-            ReviewJdbcTemplateRepository.joinLikes(review, jdbcTemplate);
-            ReviewJdbcTemplateRepository.joinLikedByCurrentUser(review, currentUserId, jdbcTemplate);
-
-            return review;
-        }, album.getAlbumId());
-
-        album.setReviews(reviews);
-    }
+//    private void joinReviews(Album album, int currentUserId) {
+//        final String reviewSql = "select r.user_id, r.review_id, r.stars, r.content, u.user_name " +
+//                "from albums as a " +
+//                "inner join reviews r on a.album_id = r.album_id " +
+//                "inner join users u on r.user_id = u.user_id " +
+//                "where a.album_id = ?;";
+//
+//        List<Review> reviews = jdbcTemplate.query(reviewSql, (resultSet, i) -> {
+//            Review review = new Review();
+//            review.setReviewId(resultSet.getInt("review_id"));
+//            review.setContent(resultSet.getString("content"));
+//            review.setStars(resultSet.getInt("stars"));
+//
+//            User user = new User();
+//            user.setUserId(resultSet.getInt("user_id"));
+//            user.setUserName(resultSet.getString("user_name"));
+//
+//            review.setUser(user);
+//            review.setAlbum(null);
+//            review.setAlbumId(album.getAlbumId());
+//
+//            ReviewJdbcTemplateRepository.joinLikes(review, jdbcTemplate);
+//            ReviewJdbcTemplateRepository.joinLikedByCurrentUser(review, currentUserId, jdbcTemplate);
+//
+//            return review;
+//        }, album.getAlbumId());
+//
+//        album.setReviews(reviews);
+//    }
 }
