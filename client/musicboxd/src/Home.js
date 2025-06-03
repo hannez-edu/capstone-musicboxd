@@ -39,9 +39,13 @@ function Home() {
         <div className="row justify-content-center">
           {popular.map(album => (
             <div className="col-2">
-                <img className="w-100" src={album === null || isEmptyString(album.artUrl) ? "" : album.artUrl} alt="Album cover"/>
-                <h4 className="text-center text-break">{album === null ? "Loading title..." : album.title}</h4>
-                <h5 className="text-center text-break">{album === null ? "Loading artist..." : album.artist}</h5>
+              <div className="card">
+                <img className="card-img-top w-100" src={album === null || isEmptyString(album.artUrl) ? "" : album.artUrl} alt="Album cover"/>
+                <div className="card-body text-center">
+                  <h4 classname="text-center text-break">{album === null ? "loading title..." : album.title}</h4>
+                  <h5 classname="text-center text-break">{album === null ? "loading artist..." : album.artist}</h5>
+                </div>
+              </div>
             </div>
           ))}
         </div>
@@ -52,9 +56,13 @@ function Home() {
         <div className="row justify-content-center">
           {recentAlbums.map(album => (
             <div className="col-2">
-                <img className="w-100" src={album === null || isEmptyString(album.artUrl) ? "" : album.artUrl} alt="Album cover"/>
-                <h4 className="text-center text-break">{album === null ? "Loading title..." : album.title}</h4>
-                <h5 className="text-center text-break">{album === null ? "Loading artist..." : album.artist}</h5>
+              <div className="card">
+                <img className="card-img-top w-100" src={album === null || isEmptyString(album.artUrl) ? "" : album.artUrl} alt="Album cover"/>
+                <div className="card-body text-center">
+                  <h4 classname="text-center">{album === null ? "loading title..." : album.title}</h4>
+                  <h5 classname="text-center">{album === null ? "loading artist..." : album.artist}</h5>
+                </div>
+              </div>
             </div>
           ))}
         </div>

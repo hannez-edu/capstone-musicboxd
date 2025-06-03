@@ -33,3 +33,12 @@ Content-Type: application/json
 
 ### Delete User
 DELETE {{url}}/1 HTTP/1.1
+
+### Get Token
+POST {{url}}/authenticate HTTP/1.1
+Content-Type: application/json
+
+{
+    "username": "t3st1ng",
+    "password": "password"
+}
