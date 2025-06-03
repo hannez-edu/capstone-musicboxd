@@ -25,8 +25,6 @@ public class User extends org.springframework.security.core.userdetails.User {
         this.userName = userName;
         this.password = password;
         this.roles = roles;
-        this.following = new ArrayList<>();
-        this.followers = new ArrayList<>();
     }
 
     // Additional constructor for full user information
