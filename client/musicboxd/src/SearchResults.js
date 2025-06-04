@@ -1,9 +1,12 @@
 import { useState, useEffect } from "react";
-import { useSearchParams, Link } from "react-router-dom";
+import { useSearchParams, Link, useNavigate } from "react-router-dom";
+import { fetchAddAlbum } from "./album/fetchAlbum";
 
 function SearchResults() {
   const [searchParams] = useSearchParams();
   const [results, setResults] = useState([]);
+  const [searching, setSearching] = useState(true); // Swaps to false when we're done searching to show a msg that we're searching.
+  const navigate = useNavigate();
 
   const query = searchParams.get("q") || "";
 
@@ -11,10 +14,13 @@ function SearchResults() {
   const limit = "&limit=8&fmt=json";
 
   useEffect(() => {
-    // TODO: we need to wait a bit for the fetch. May want to refactor this to be async & completely wait instead (could take too long though, so maybe 3sec is reasonable...)
+    // TODO: Could set the album cover to the placeholder immediately so we get that back ASAP, then we try to fetch the covers & update those once that fetch is over.
+      // Should make the load much snappier, since the MB queries actually load pretty quick, its the art that takes a bit.
     let fetched = fetchAlbumSearch(query);
 
     const timeoutId = setTimeout(() => {
+      console.log(fetched);
+      setSearching(false);
       setResults(fetched);
     }, 3000);
 
@@ -47,9 +53,10 @@ function SearchResults() {
           let albums = [];
           for (let i = 0; i < data.length; i++) {
             let album = {
-              id: data[i].id,
+              albumId: data[i].id,
               title: data[i].title,
               artist: data[i]["artist-credit"][0].name,
+              firstReleaseDate: data[i]["first-release-date"]
             };
             albums.push(album);
           }
@@ -60,11 +67,12 @@ function SearchResults() {
       })
       .then(async albums => {
         for (let i = 0; i < albums.length; i++) {
-          albums[i].artUrl = await fetchArt(albums[i].id);
+          albums[i].artUrl = await fetchArt(albums[i].albumId);
           returnedAlbums.push(albums[i]);
         }
         return returnedAlbums;
-      });
+      })
+      .catch(console.log);
 
       return returnedAlbums;
   }
@@ -103,23 +111,40 @@ function SearchResults() {
       .then(data => {
         coverImg = data.images[0].thumbnails.small;
         return coverImg;
-      });
+      })
+      .catch(console.log);
   };
 
   const handleAlbumClick = (album) => {
-    // TODO: save the album to the database - database handles deduplication via album - artist combination.
-    console.log(`Album clicked: ${album.title} by ${album.artist}`);
-
-    // Once we add, we should get back the album's ID from the backend so we can properly navigate to the correct link.
+    console.log(`Album clicked: ${album.title} by ${album.artist} on ${album.firstReleaseDate}`);
+    album.albumId = 0; // Clear ID to something the backend can parse properly
     
-    // Then navigate to the album page would happen via the Link
+    fetchAddAlbum(album)
+      .then(response => {
+        return response.json();
+      })
+      .then(data => {
+        if (data.albumId) {
+          console.log("DEBUG: Data received");
+          console.log(JSON.stringify(data));
+          navigate(`/album/${data.albumId}`);
+        }
+      })
+      .catch(console.log);
+      
+    // Then, the Link should navigate us to the correct in-DB album page!
   };
 
   return (
     <div className="container mt-4">
       <h2>Search Results for "{query}"</h2>
+      {searching && (
+        <div className="alert alert-info mt-4">
+          Searching, please wait...
+        </div>
+      )}
 
-      {results.length === 0 ? (
+      {!searching && results.length === 0 ? (
         <div className="alert alert-info mt-4">
           No albums found matching "{query}". Try a different search term.
         </div>
@@ -131,10 +156,7 @@ function SearchResults() {
                 className="card h-100"
                 onClick={() => handleAlbumClick(album)}
               >
-                <Link
-                  to={`/album/${album.id}`}
-                  className="text-decoration-none"
-                >
+
                   <img
                     src={album.artUrl}
                     className="card-img-top"
@@ -144,7 +166,7 @@ function SearchResults() {
                     <h5 className="card-title">{album.title}</h5>
                     <p className="card-text">{album.artist}</p>
                   </div>
-                </Link>
+
               </div>
             </div>
           ))}
