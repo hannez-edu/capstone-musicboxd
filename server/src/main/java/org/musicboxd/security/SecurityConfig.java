@@ -31,10 +31,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.cors();
 
         http.authorizeRequests()
-                // TODO: If we want specific endpoints to NOT require auth, add them here w/ .permitAll() ****************************************Add commentMore actions
-                // TODO: If a particular role is required, use ".hasRole("ADMIN")" attached to the antMatcher()
                 .antMatchers("/api/user/authenticate").permitAll()
                 .antMatchers("/api/user/register").permitAll()
+                .antMatchers("/api/reviews").permitAll()
+                .antMatchers("/api/albums").permitAll()
+                .antMatchers("/api/user/delete/*").hasRole("ADMIN")
+                .antMatchers("/api/user/update/*").hasRole("ADMIN")
+                .antMatchers("/api/albums/delete/*").hasRole("ADMIN")
                 .anyRequest().authenticated()
                 .and()
                 .addFilter(new JwtRequestFilter(authenticationManager(), converter))
@@ -42,8 +45,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
 //        http.addFilterBefore(new JwtRequestFilter(authenticationManager(), converter), BasicAuthenticationFilter.class);
-
-        // Look into lazy annotation
     }
 
     @Override

@@ -4,6 +4,7 @@ import org.musicboxd.domain.Result;
 import org.musicboxd.domain.ResultType;
 import org.musicboxd.domain.UserService;
 import org.musicboxd.models.User;
+import org.musicboxd.models.UserRole;
 import org.musicboxd.security.JwtConverter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -43,12 +44,11 @@ public class UserController {
         return service.findById(userId);
     }
 
-    // TODO: We need to ensure that whatever information is passed in is enough to instantiate a User object as it is in the User class.
-    // With the new restrictions added by extending UserDetails, we need to be more careful with how we instantiate a User.
-    // Might be able to enforce that the provided JSON from the client works to instantiate a User properly.
-    // If not, we could probably re-instantiate within the UserService we pass the User to.
     @PostMapping("/register")
-    public ResponseEntity<Object> registerUser(@RequestBody User user) {
+    public ResponseEntity<Object> registerUser(@RequestBody Map<String, String> userData) {
+        User user = new User(0, userData.get("userName"), userData.get("password"), userData.get("email"),
+                userData.get("firstName"), userData.get("lastName"), List.of(UserRole.USER));
+
         Result<User> result = service.add(user);
 
         if (result.getType() == ResultType.SUCCESS) {
@@ -58,7 +58,7 @@ public class UserController {
         return ErrorResponse.build(result);
     }
 
-    @PutMapping("{userId}")
+    @PutMapping("/update/{userId}")
     public ResponseEntity<Object> update(@PathVariable int userId, @RequestBody User user) {
         if (userId != user.getUserId()) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
@@ -71,9 +71,8 @@ public class UserController {
 
         return ErrorResponse.build(result);
     }
-
-    // TODO: This should be restricted to the ADMIN role (authentication differentiation between different roles has not been added yet... Very easy to do so though.)
-    @DeleteMapping("{userId}")
+    
+    @DeleteMapping("/delete/{userId}")
     public ResponseEntity<Void> deleteById(@PathVariable int userId) {
         Result<User> result = service.deleteById(userId);
         if (result.getType() == ResultType.SUCCESS) {
@@ -100,6 +99,13 @@ public class UserController {
 
                 HashMap<String, String> map = new HashMap<>();
                 map.put("jwt_token", jwtToken);
+
+                User getId = findAll().stream()
+                        .filter(u -> u.getUserName().equals(credentials.get("username")))
+                        .findFirst()
+                        .orElse(null);
+
+                map.put("id", Integer.toString(getId.getUserId()));
 
                 // Return the generated JWT Token to the client for future authentication requests
                 return new ResponseEntity<>(map, HttpStatus.OK);

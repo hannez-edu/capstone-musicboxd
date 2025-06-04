@@ -49,7 +49,7 @@
         * [X] Create React Project (0.2hrs)
         * [X] Clean Up Cruft (0.25hrs)
         * [X] Add necessary dependencies (0.25hrs)
-    * [X] Components
+     * [X] Components
         * [X] Home (1.0hrs)
         * [X] NavBar (1.0hrs)
         * [X] Album (1.0hrs)
