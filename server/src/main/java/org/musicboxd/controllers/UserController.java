@@ -86,7 +86,6 @@ public class UserController {
 
     // This is the "login" request - we log in to retrieve our JWT token to be used in any mappings that require authentication.
     // Here, we only want the username & password for authentication.
-    // Returns the token & the user ID on successful login.
     @PostMapping("/authenticate")
     public ResponseEntity<Map<String, String>> authenticate(@RequestBody Map<String, String> credentials) {
         UsernamePasswordAuthenticationToken authToken =
