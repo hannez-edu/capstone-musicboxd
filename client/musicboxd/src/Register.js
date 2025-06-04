@@ -36,8 +36,8 @@ function Register() {
     setUserDetails(newUserDetails);
   };
 
-  // This will retrieve the token from the Backend when security is implemented & register the user in the backend.
-  // TODO: Figure out how we're going to store the token after we retrieve it so it can be bundled as a header with all requests requiring authentication later - should use same process as login here ******************
+  // This just registers the user, it DOES NOT log them in!
+  // So, after we get a successful register, it may be a good idea to prompt the user to go to the login page & log in!
   const registerUser = () => {
     const post = {
       method: 'POST',

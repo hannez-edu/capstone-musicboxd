@@ -44,10 +44,6 @@ public class UserController {
         return service.findById(userId);
     }
 
-    // TODO: We need to ensure that whatever information is passed in is enough to instantiate a User object as it is in the User class.
-    // With the new restrictions added by extending UserDetails, we need to be more careful with how we instantiate a User.
-    // Might be able to enforce that the provided JSON from the client works to instantiate a User properly.
-    // If not, we could probably re-instantiate within the UserService we pass the User to.
     @PostMapping("/register")
     public ResponseEntity<Object> registerUser(@RequestBody Map<String, String> userData) {
         User user = new User(0, userData.get("userName"), userData.get("password"), userData.get("email"),
@@ -91,6 +87,7 @@ public class UserController {
 
     // This is the "login" request - we log in to retrieve our JWT token to be used in any mappings that require authentication.
     // Here, we only want the username & password for authentication.
+    // Returns the token & the user ID on successful login.
     @PostMapping("/authenticate")
     public ResponseEntity<Map<String, String>> authenticate(@RequestBody Map<String, String> credentials) {
         UsernamePasswordAuthenticationToken authToken =
@@ -104,6 +101,13 @@ public class UserController {
 
                 HashMap<String, String> map = new HashMap<>();
                 map.put("jwt_token", jwtToken);
+
+                User getId = findAll().stream()
+                        .filter(u -> u.getUserName().equals(credentials.get("username")))
+                        .findFirst()
+                        .orElse(null);
+
+                map.put("id", Integer.toString(getId.getUserId()));
 
                 // Return the generated JWT Token to the client for future authentication requests
                 return new ResponseEntity<>(map, HttpStatus.OK);

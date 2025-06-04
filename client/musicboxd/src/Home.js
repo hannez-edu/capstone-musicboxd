@@ -67,10 +67,10 @@ function Home() {
   const renderAlbums = (albums) => {
     return (
       <section className="container-fluid" id="popular">
-        <div className="row justify-content-center">
+        <div className="row row-cols-5 justify-content-center">
           {albums.map(album => (
             <div className="col" key={album.id}>
-              <div className="card border-0 vw-20">
+              <div className="card border-0">
                 <img className="card-img-top" src={album === null || isEmptyString(album.artUrl) ? "" : album.artUrl} alt="Album cover"/>
                 <div className="card-body text-center">
                   <p className="text-center word-break fs-4">{album === null ? "loading title..." : album.title}</p>
@@ -95,10 +95,10 @@ function Home() {
 
       <h2 className="mt-3 text-center">Latest Reviews</h2>
       <section className="container-fluid" id="listened">
-        <div className="row justify-content-center">
+        <div className="row row-cols-2 justify-content-center">
           {latestReviewed.map(review => (
             <div className="col" key={review.id}>
-              <div className="card border-0 vw-50">
+              <div className="card border-0">
                 <img className="card-img-top" src={TEMP_ALBUM.artUrl} alt="Album cover"/>
                 <AlbumReview className="card-body" review={review} />
                 <Link className="stretched-link" to={`/album/${review.albumId}`} />
