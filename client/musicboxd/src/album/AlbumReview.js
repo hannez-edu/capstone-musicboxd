@@ -9,6 +9,7 @@ import { Link } from "react-router-dom";
 function AlbumReview({ review, afterDelete }) {
     const [editing, setEditing] = useState(false);
     const [deleting, setDeleting] = useState(false);
+    const [wasDeleted, setWasDeleted] = useState(false);
     const [deleteInProgress, setDeleteInProgress] = useState(false);
     const [myReview, setMyReview] = useState(review);
 
@@ -26,6 +27,8 @@ function AlbumReview({ review, afterDelete }) {
                 if (response.status === 204) {
                     if (afterDelete) {
                         afterDelete(myReview.reviewId);
+                    } else {
+                        setWasDeleted(true);
                     }
                 } else {
                     setDeleteInProgress(false);
@@ -33,6 +36,14 @@ function AlbumReview({ review, afterDelete }) {
                 }
             })
             .catch(console.log);
+    }
+
+    if (wasDeleted) {
+        return (
+            <div>
+                Review was deleted.
+            </div>
+        );
     }
 
     return (

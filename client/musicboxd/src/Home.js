@@ -141,14 +141,15 @@ function Home() {
       {recentAlbums.isTemp == null && renderAlbums(recentAlbums, "recent")}
 
       <h2 className="mt-3 text-center">Latest Reviews</h2>
-      <section className="container-fluid" id="listened">
+      <section className="container-fluid mb-2" id="listened">
         <div className="row row-cols-2 justify-content-center">
           {latestReviewed.map((review, i) => (
             <div className="col" key={`${i}/${review.id}`}>
               <div className="card border-0">
-                <img className="card-img-top" src={review.album.artUrl} alt="Album cover"/>
+                <Link className="mb-2" to={`/album/${review.albumId}`}>
+                  <img className="card-img-top" src={review.album.artUrl} alt="Album cover"/>
+                </Link>
                 <AlbumReview className="card-body" review={review} />
-                <Link className="stretched-link" to={`/album/${review.albumId}`} />
               </div>
             </div>
           ))}
