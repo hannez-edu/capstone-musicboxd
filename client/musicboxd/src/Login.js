@@ -50,7 +50,7 @@ function Login() {
       .then(data => { // Set 
         GlobalTokenID.id = parseInt(data.id);
         GlobalTokenID.token = data.jwt_token;
-        navigate("/album/1");
+        navigate("/");
       })
       .catch(console.log);
   };
