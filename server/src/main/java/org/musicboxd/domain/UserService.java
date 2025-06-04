@@ -83,7 +83,7 @@ public class UserService implements UserDetailsService {
 
         // User we want to follow doesn't exist!
         if (!findAll().stream().anyMatch(u -> u.getUserId() == userId)) {
-            result.addMessage(String.format("User with ID %s does not exist!", user.getUserId()), ResultType.NOT_FOUND);
+            result.addMessage(String.format("User with ID %s does not exist!", userId), ResultType.NOT_FOUND);
             return result;
         }
 
@@ -92,6 +92,26 @@ public class UserService implements UserDetailsService {
         }
 
         return result;
+    }
+
+    public Result<User> unfollowUserById(User user, int userId) {
+        Result<User> result = new Result<>();
+
+        // User we want to unfollow doesn't exist
+        if (!findAll().stream().anyMatch(u -> u.getUserId() == userId)) {
+            result.addMessage(String.format("User with ID %s does not exist!", userId), ResultType.NOT_FOUND);
+            return result;
+        }
+
+        if (!repository.unfollowUserById(user, userId)) {
+            result.addMessage("Could not unfollow requested user!", ResultType.INVALID);
+        }
+
+        return result;
+    }
+
+    public boolean isFollowing(int followerId, int followedId) {
+        return repository.isFollowing(followerId, followedId);
     }
 
     // Ensure required fields aren't missing, and that values that should be unique are.

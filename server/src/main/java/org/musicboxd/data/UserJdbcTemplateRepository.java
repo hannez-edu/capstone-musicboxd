@@ -116,6 +116,19 @@ public class UserJdbcTemplateRepository implements UserRepository {
         return jdbcTemplate.update(sql, user.getUserId(), userId) > 0;
     }
 
+    public boolean unfollowUserById(User user, int userId) {
+        final String sql = "delete from following where follower_id = ? and followed_id = ?;";
+
+        return jdbcTemplate.update(sql, user.getUserId(), userId) > 0;
+    }
+
+    public boolean isFollowing(int followerId, int followedId) {
+        final String sql = "select count(*) from following where follower_id = ? and followed_id = ?;";
+
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, followerId, followedId);
+        return count != null && count > 0;
+    }
+
     // Should set the user's role list
     private void joinRole(User user) {
         RowMapper<UserRole> rowMapper = (rs, rowNum) -> UserRole.valueOf(rs.getString("name").toUpperCase());
