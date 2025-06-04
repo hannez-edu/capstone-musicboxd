@@ -82,6 +82,19 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
+    @PostMapping("/follow/{userId}")
+    public ResponseEntity<Object> followUserById(@PathVariable int userId, @RequestBody Map<String, String> toFollow) {
+        int followId = Integer.parseInt(toFollow.get("userId"));
+
+        Result<User> result = service.followUserById(findById(userId), followId);
+
+        if (result.getType() == ResultType.SUCCESS) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
     // AUTHENTICATION
 
     // This is the "login" request - we log in to retrieve our JWT token to be used in any mappings that require authentication.
