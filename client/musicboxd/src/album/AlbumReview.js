@@ -69,7 +69,7 @@ function AlbumReview({ review, afterDelete }) {
                     </>
                 )}
                 <div name="review heading" className="d-flex flex-row justify-content-between">
-                    <Link to={myReview?.user?.userName != null && myReview?.userId !== GlobalTokenID.id ? `/catalog/${myReview?.user?.userName}` : "/catalog/current-user"}>
+                    <Link to={myReview?.userId !== GlobalTokenID.id ? `/catalog/${myReview?.userId}` : "/catalog/current-user"}>
                         <h5>{myReview?.user?.userName}</h5>
                     </Link>
                     <Stars starCount={myReview.stars} />
