@@ -1,3 +1,5 @@
+import { GlobalTokenID } from "../Login";
+
 const BASE_URL = "http://localhost:8080/api/reviews";
 
 function fetchAddReview(review) {
@@ -6,6 +8,7 @@ function fetchAddReview(review) {
         headers: {
             "Accept": "application/json",
             "Content-Type": "application/json",
+            "Authorization": "Bearer " + GlobalTokenID.token
         },
         body: JSON.stringify(review),
     };
@@ -19,6 +22,7 @@ function fetchUpdateReview(review) {
         headers: {
             "Accept": "application/json",
             "Content-Type": "application/json",
+            "Authorization": "Bearer " + GlobalTokenID.token
         },
         body: JSON.stringify(review),
     };
@@ -28,14 +32,29 @@ function fetchUpdateReview(review) {
 
 function fetchDeleteReview(reviewId) {
     const init = {
-        method: "DELETE"
+        method: "DELETE",
+        headers: {
+            "Authorization": "Bearer " + GlobalTokenID.token
+        }
     };
 
     return fetch(`${BASE_URL}/${reviewId}`, init);
 }
 
+function fetchUpdateLikeReview(reviewId) {
+    const init = {
+        method: "POST",
+        headers: {
+            "Authorization": "Bearer " + GlobalTokenID.token
+        }
+    };
+
+    return fetch(`${BASE_URL}/review=${reviewId}&user=${GlobalTokenID.id}`, init);
+}
+
 export {
     fetchAddReview,
     fetchUpdateReview,
-    fetchDeleteReview
+    fetchDeleteReview,
+    fetchUpdateLikeReview
 };

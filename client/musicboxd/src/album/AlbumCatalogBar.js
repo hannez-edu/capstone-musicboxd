@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { fetchAddCatalog, fetchUpdateCatalog } from "./fetchCatalog";
+import { GlobalTokenID } from "../Login";
 
-function AlbumCatalogBar({ catalog, currentUserId, albumId }) {
+function AlbumCatalogBar({ catalog, albumId }) {
     const [selection, setSelection] = useState("");
     const [submitting, setSubmitting] = useState(false);
     const [myCatalog, setMyCatalog] = useState(catalog);
@@ -22,11 +23,16 @@ function AlbumCatalogBar({ catalog, currentUserId, albumId }) {
         setSelection(event.target.name);
         setSubmitting(true);
 
+        if (GlobalTokenID.id == null || GlobalTokenID.token == null) {
+            setSubmitting(false);
+            setErrors(["Only logged in users can use catalog feature."]);
+        }
+
         if (myCatalog == null) {
             // Need to create a new catalog
             const newCatalog = {
                 albumId: albumId,
-                userId: currentUserId,
+                userId: GlobalTokenID.id,
                 status: event.target.name
             };
 

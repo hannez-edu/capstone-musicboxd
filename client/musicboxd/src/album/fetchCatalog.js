@@ -1,14 +1,17 @@
+import { GlobalTokenID } from "../Login";
+
 const BASE_URL = "http://localhost:8080/api/catalog";
 
-function fetchCatalogByUserId(userId) {
+function fetchCatalogByUserId() {
     const init = {
         method: "GET",
         headers: {
-            "Accept": "application/json"
+            "Accept": "application/json",
+            "Authorization": "Bearer " + GlobalTokenID.token
         }
     };
-
-    return fetch(`${BASE_URL}/users/${userId}`, init);
+    
+    return fetch(`${BASE_URL}/users/${GlobalTokenID?.id != null ? GlobalTokenID.id : 0}`, init);
 }
 
 function fetchAddCatalog(catalog) {
@@ -16,7 +19,8 @@ function fetchAddCatalog(catalog) {
         method: "POST",
         headers: {
             "Accept": "application/json",
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + GlobalTokenID.token
         },
         body: JSON.stringify(catalog)
     };
@@ -29,7 +33,8 @@ function fetchUpdateCatalog(catalog) {
         method: "PUT",
         headers: {
             "Accept": "application/json",
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + GlobalTokenID.token
         },
         body: JSON.stringify(catalog)
     };

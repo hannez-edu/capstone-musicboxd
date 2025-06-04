@@ -1,14 +1,15 @@
 import { useState } from "react";
 import AlbumReviewFormStars from "./AlbumReviewFormStars";
 import { fetchAddReview, fetchUpdateReview } from "./fetchReview";
+import { GlobalTokenID } from "../Login";
 
 const DEFAULT_REVIEW = {
     stars: 0,
     content: "",
 };
 
-function AlbumReviewForm({ review = DEFAULT_REVIEW, albumId, userId, afterSubmit, onCancel }) {
-    const [currentReview, setCurrentReview] = useState(review === null ? DEFAULT_REVIEW : review);
+function AlbumReviewForm({ review, albumId, afterSubmit, onCancel }) {
+    const [currentReview, setCurrentReview] = useState(review == null ? DEFAULT_REVIEW : review);
     const [errors, setErrors] = useState([]);
     const [disableSubmit, setDisableSubmit] = useState(false);
 
@@ -51,7 +52,7 @@ function AlbumReviewForm({ review = DEFAULT_REVIEW, albumId, userId, afterSubmit
         if (review?.userId) {
             submitReview.userId = review.userId;
         } else {
-            submitReview.userId = userId;
+            submitReview.userId = GlobalTokenID.id == null ? 0 : GlobalTokenID.id;
         }
 
         if (review == null) {
@@ -68,6 +69,7 @@ function AlbumReviewForm({ review = DEFAULT_REVIEW, albumId, userId, afterSubmit
                         if (afterSubmit != null) {
                             afterSubmit(data);
                         }
+                        console.log(data);
                     } else {
                         setErrors(data);
                         setDisableSubmit(false);
@@ -75,6 +77,7 @@ function AlbumReviewForm({ review = DEFAULT_REVIEW, albumId, userId, afterSubmit
                 })
                 .catch(console.log);
         } else {
+            submitReview.user = null;
             fetchUpdateReview(submitReview)
                 .then(response => {
                     if (response.status === 204) {
@@ -88,7 +91,7 @@ function AlbumReviewForm({ review = DEFAULT_REVIEW, albumId, userId, afterSubmit
                 .then(data => {
                     if (data === null) {
                         if (afterSubmit != null) {
-                            afterSubmit(submitReview);
+                            afterSubmit(currentReview);
                         }
                     } else {
                         setErrors(data);
