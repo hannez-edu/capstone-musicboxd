@@ -53,7 +53,6 @@ function Login() {
         GlobalTokenID.token = data.jwt_token;
         // The administrator account is *always* the first account
         GlobalTokenID.isAdmin = parseInt(data.id) === 1;
-
         navigate("/");
       })
       .catch(console.log);
