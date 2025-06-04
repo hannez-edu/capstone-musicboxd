@@ -1,14 +1,23 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Likes from "./Likes";
 import Stars from "./Stars";
 import AlbumReviewForm from "./AlbumReviewForm";
 import { fetchDeleteReview } from "./fetchReview";
+import { GlobalTokenID } from "../Login";
+import { Link } from "react-router-dom";
 
-function AlbumReview({ review, currentUserId, afterDelete }) {
+function AlbumReview({ review, afterDelete }) {
     const [editing, setEditing] = useState(false);
     const [deleting, setDeleting] = useState(false);
     const [deleteInProgress, setDeleteInProgress] = useState(false);
     const [myReview, setMyReview] = useState(review);
+
+    function handleReviewLikes(newCurrentLike, newLikes) {
+        const tempReview = {...myReview};
+        tempReview.likedByCurrentUser = newCurrentLike;
+        tempReview.likes = newLikes;
+        setMyReview(tempReview);
+    }
 
     function handleDelete() {
         setDeleteInProgress(true);
@@ -49,7 +58,9 @@ function AlbumReview({ review, currentUserId, afterDelete }) {
                     </>
                 )}
                 <div name="review heading" className="d-flex flex-row justify-content-between">
-                    <h5>{myReview?.user?.userName}</h5>
+                    <Link to={myReview?.user?.userName != null && myReview?.userId !== GlobalTokenID.id ? `/catalog/${myReview?.user?.userName}` : "/catalog/current-user"}>
+                        <h5>{myReview?.user?.userName}</h5>
+                    </Link>
                     <Stars starCount={myReview.stars} />
                 </div>
                 <p name="review content">
@@ -57,14 +68,14 @@ function AlbumReview({ review, currentUserId, afterDelete }) {
                 </p>
                 <div className="d-flex justify-content-between">
                     <div className="d-inline-flex gap-2">
-                        {!deleting && myReview?.userId === currentUserId && (
+                        {!deleting && myReview?.userId === GlobalTokenID.id && (
                             <button type="button" className="btn btn-danger" onClick={() => setDeleting(true)}>Delete</button>
                         )}
-                        {!deleting && myReview?.userId === currentUserId && (
+                        {!deleting && myReview?.userId === GlobalTokenID.id && (
                             <button type="button" className="btn btn-warning" onClick={() => setEditing(true)}>Edit</button>
                         )}
                     </div>
-                    <Likes likesCount={myReview.likes} isLiked={myReview.likedByCurrentUser} disableLiking={currentUserId == null || currentUserId <= 0 || deleting} />
+                    <Likes likesCount={myReview.likes} isLiked={myReview.likedByCurrentUser} reviewId={myReview.reviewId} setReviewLikes={handleReviewLikes}/>
                 </div>
             </div>
         )}

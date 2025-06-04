@@ -48,8 +48,9 @@ function Login() {
         }
       })
       .then(data => { // Set 
-        GlobalTokenID.id = data.id;
+        GlobalTokenID.id = parseInt(data.id);
         GlobalTokenID.token = data.jwt_token;
+        navigate("/album/1");
       })
       .catch(console.log);
   };
