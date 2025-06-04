@@ -131,7 +131,7 @@ function AlbumPage() {
                 <div id="albumInfo" className="d-flex flex-column w-50 gap-2">
                     <h1>{album === null ? "Loading title..." : album.title}</h1>
                     <h3>{album === null ? "Loading artist..." : album.artist}</h3>
-                    <h5>{album === null ? "MM/DD/YYYY" : formatAlbumDate(album.firstReleasedDate)}</h5>
+                    <h5>{album === null ? "MM/DD/YYYY" : formatAlbumDate(album.firstReleaseDate)}</h5>
                     {currentUserId > 0 && (
                         <AlbumCatalogBar catalog={catalog} albumId={album?.albumId} />
                     )}
