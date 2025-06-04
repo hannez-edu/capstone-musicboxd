@@ -52,6 +52,43 @@ class ReviewJdbcTemplateRepositoryTest {
         assertTrue(all.size() >= 2);
     }
 
+    /* FindLatest */
+
+    @Test
+    public void shouldFindLatest0() {
+        List<Review> latest = repository.findLatest(0, 0);
+
+        assertNotNull(latest);
+        assertEquals(0, latest.size());
+    }
+
+    @Test
+    public void shouldFindLatest1() {
+        List<Review> latest = repository.findLatest(1, 0);
+
+        assertNotNull(latest);
+        // The latest should be at least 4 or higher
+        assertTrue(latest.stream().allMatch(r -> r.getReviewId() >= 4));
+    }
+
+    @Test
+    public void shouldFindLatest3() {
+        List<Review> latest = repository.findLatest(3, 0);
+
+        assertNotNull(latest);
+        assertEquals(3, latest.size());
+        // The latest should be at least 2 or higher
+        assertTrue(latest.stream().allMatch(r -> r.getReviewId() >= 2));
+    }
+
+    @Test
+    public void shouldFindLatestAll() {
+        List<Review> latest = repository.findLatest(10, 0);
+
+        assertNotNull(latest);
+        assertTrue(latest.size() >= 4);
+    }
+
     /* FindById */
 
     @Test
