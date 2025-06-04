@@ -58,7 +58,7 @@ public class UserController {
         return ErrorResponse.build(result);
     }
 
-    @PutMapping("{userId}")
+    @PutMapping("/update/{userId}")
     public ResponseEntity<Object> update(@PathVariable int userId, @RequestBody User user) {
         if (userId != user.getUserId()) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
@@ -71,9 +71,8 @@ public class UserController {
 
         return ErrorResponse.build(result);
     }
-
-    // TODO: This should be restricted to the ADMIN role (authentication differentiation between different roles has not been added yet... Very easy to do so though.)
-    @DeleteMapping("{userId}")
+    
+    @DeleteMapping("/delete/{userId}")
     public ResponseEntity<Void> deleteById(@PathVariable int userId) {
         Result<User> result = service.deleteById(userId);
         if (result.getType() == ResultType.SUCCESS) {
