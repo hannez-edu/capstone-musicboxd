@@ -89,7 +89,7 @@ function SearchResults() {
     };
 
     // If we don't get an album cover, we should have a dummy placeholder image to display
-    let coverImg = "http://dummyimage.com/100x100.png/ff4444/ffffff";
+    let coverImg = "https://placehold.co/250?text=No+Cover";
 
     return fetch(artRequestUrl, get)
       .then(response => {
@@ -156,17 +156,16 @@ function SearchResults() {
                 className="card h-100"
                 onClick={() => handleAlbumClick(album)}
               >
-
-                  <img
-                    src={album.artUrl}
-                    className="card-img-top"
-                    alt={`${album.title} album cover`}
-                  />
-                  <div className="card-body">
-                    <h5 className="card-title">{album.title}</h5>
-                    <p className="card-text">{album.artist}</p>
-                  </div>
-
+                <img
+                  src={album.artUrl}
+                  className="card-img-top"
+                  alt={`${album.title} album cover`}
+                />
+                <div className="card-body">
+                  <h5 className="card-title">{album.title}</h5>
+                  <p className="card-text">{album.artist}</p>
+                </div>
+                <a href="#" className="stretched-link"></a>
               </div>
             </div>
           ))}
