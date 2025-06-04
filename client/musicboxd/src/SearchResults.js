@@ -1,81 +1,112 @@
 import { useState, useEffect } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 
-// Temporary search data
-const TEMP_SEARCH_RESULTS = [
-  {
-    id: 1,
-    title: "The Dark Side of the Moon",
-    artist: "Pink Floyd",
-    artUrl: "http://dummyimage.com/100x100.png/cc0000/ffffff",
-  },
-  {
-    id: 2,
-    title: "Thriller",
-    artist: "Michael Jackson",
-    artUrl: "http://dummyimage.com/100x100.png/ff4444/ffffff",
-  },
-  {
-    id: 3,
-    title: "Abbey Road",
-    artist: "The Beatles",
-    artUrl: "http://dummyimage.com/100x100.png/dddddd/000000",
-  },
-  {
-    id: 4,
-    title: "Nevermind",
-    artist: "Nirvana",
-    artUrl: "http://dummyimage.com/100x100.png/5fa2dd/ffffff",
-  },
-  {
-    id: 5,
-    title: "OK Computer",
-    artist: "Radiohead",
-    artUrl: "http://dummyimage.com/100x100.png/ff4444/ffffff",
-  },
-  {
-    id: 6,
-    title: "Back in Black",
-    artist: "AC/DC",
-    artUrl: "http://dummyimage.com/100x100.png/5fa2dd/ffffff",
-  },
-  {
-    id: 7,
-    title: "The Joshua Tree",
-    artist: "U2",
-    artUrl: "http://dummyimage.com/100x100.png/dddddd/000000",
-  },
-  {
-    id: 8,
-    title: "Rumours",
-    artist: "Fleetwood Mac",
-    artUrl: "http://dummyimage.com/100x100.png/cc0000/ffffff",
-  }
-];
-
 function SearchResults() {
   const [searchParams] = useSearchParams();
   const [results, setResults] = useState([]);
 
   const query = searchParams.get("q") || "";
 
+  const url = "https://musicbrainz.org/ws/2/release-group?query=";
+  const limit = "&limit=5&fmt=json";
+
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      // Filter the temporary results based on the query, this would be an API call to MusicBrainz
-      const filteredResults = TEMP_SEARCH_RESULTS.filter(
-        (album) =>
-          album.title.toLowerCase().includes(query.toLowerCase()) ||
-          album.artist.toLowerCase().includes(query.toLowerCase())
-      );
+      let results = fetchAlbumSearch(query);
+      console.log(`DEBUG: Results: ${results}`);
 
-      setResults(filteredResults);
+      setResults(results);
     }, 500);
 
     return () => clearTimeout(timeoutId);
   }, [query]);
 
+  const fetchAlbumSearch = (query) => {
+    const get = {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'User-Agent': 'MusicBoxd (https://github.com/hannez-edu/capstone-musicboxd/)'
+      }
+    };
+
+    let returnedAlbums = [];
+
+    fetch((url + query + limit), get)
+      .then(response => {
+        if (response.status === 200) {
+          // Got results
+          return response.json();
+        } else { // Search failed
+          return Promise.reject(`Search failed! Status code: ${response.status}`);
+        }
+      })
+      .then(data => {
+        if (data["release-groups"]) {
+          data = data["release-groups"];
+          let albums = [];
+          for (let i = 0; i < data.length; i++) {
+            let album = {
+              id: data[i].id,
+              title: data[i].title,
+              artist: data[i]["artist-credit"][0].name,
+            };
+            albums.push(album);
+          }
+          return albums;
+        } else {
+          return []; // Search returned nothing
+        }
+      })
+      .then(async albums => {
+        for (let i = 0; i < albums.length; i++) {
+          albums[i].artUrl = await fetchArt(albums[i].id);
+          returnedAlbums.push(albums[i]);
+        }
+      });
+
+      return returnedAlbums;
+  }
+
+  const fetchArt = async (releaseId) => {
+    const artRequestUrl = `http://coverartarchive.org/release-group/${releaseId}`;
+    
+    const get = {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'User-Agent': 'MusicBoxd (https://github.com/hannez-edu/capstone-musicboxd/)'
+      }
+    };
+
+    // If we don't get an album cover, we should have a dummy placeholder image to display
+    let coverImg = "http://dummyimage.com/100x100.png/ff4444/ffffff";
+
+    return fetch(artRequestUrl, get)
+      .then(response => {
+        if (response.status === 200) {
+          // Got art!
+          return response.json();
+        } else { // Couldn't find a cover - should return the placeholder image.
+          return {
+            images: [
+              {
+                thumbnails: {
+                  small: coverImg
+                }
+              }
+            ]
+          };
+        }
+      })
+      .then(data => {
+        coverImg = data.images[0].thumbnails.small;
+        return coverImg;
+      });
+  };
+
   const handleAlbumClick = (album) => {
-    // TODO: save the album to the database
+    // TODO: save the album to the database - database handles deduplication via album - artist combination.
     console.log(`Album clicked: ${album.title} by ${album.artist}`);
     // Then navigate to the album page would happen via the Link
   };
