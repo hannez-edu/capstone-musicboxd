@@ -8,15 +8,15 @@ function SearchResults() {
   const query = searchParams.get("q") || "";
 
   const url = "https://musicbrainz.org/ws/2/release-group?query=";
-  const limit = "&limit=5&fmt=json";
+  const limit = "&limit=8&fmt=json";
 
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      let results = fetchAlbumSearch(query);
-      console.log(`DEBUG: Results: ${results}`);
+    // TODO: we need to wait a bit for the fetch. May want to refactor this to be async & completely wait instead (could take too long though, so maybe 3sec is reasonable...)
+    let fetched = fetchAlbumSearch(query);
 
-      setResults(results);
-    }, 500);
+    const timeoutId = setTimeout(() => {
+      setResults(fetched);
+    }, 3000);
 
     return () => clearTimeout(timeoutId);
   }, [query]);
@@ -63,6 +63,7 @@ function SearchResults() {
           albums[i].artUrl = await fetchArt(albums[i].id);
           returnedAlbums.push(albums[i]);
         }
+        return returnedAlbums;
       });
 
       return returnedAlbums;
@@ -108,6 +109,9 @@ function SearchResults() {
   const handleAlbumClick = (album) => {
     // TODO: save the album to the database - database handles deduplication via album - artist combination.
     console.log(`Album clicked: ${album.title} by ${album.artist}`);
+
+    // Once we add, we should get back the album's ID from the backend so we can properly navigate to the correct link.
+    
     // Then navigate to the album page would happen via the Link
   };
 
