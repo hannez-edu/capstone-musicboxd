@@ -1,11 +1,8 @@
-import { useState } from "react";
 import { IoStarOutline, IoStarSharp } from "react-icons/io5";
 
 function AlbumReviewFormStars({ onStarClick, starCount }) {
-    const [stars, setStars] = useState(starCount);
 
     function handleStars(num) {
-        setStars(num);
         onStarClick(num);
     }
 
@@ -16,7 +13,7 @@ function AlbumReviewFormStars({ onStarClick, starCount }) {
                 type="button"
                 onClick={() => handleStars(1)}
             >
-                {stars >= 1 ? (
+                {starCount >= 1 ? (
                     <IoStarSharp color="gold" size="30px"/>
                 ) : (
                     <IoStarOutline size="30px" />
@@ -27,7 +24,7 @@ function AlbumReviewFormStars({ onStarClick, starCount }) {
                 type="button"
                 onClick={() => handleStars(2)}
             >
-                {stars >= 2 ? (
+                {starCount >= 2 ? (
                     <IoStarSharp color="gold" size="30px"/>
                 ) : (
                     <IoStarOutline size="30px" />
@@ -38,7 +35,7 @@ function AlbumReviewFormStars({ onStarClick, starCount }) {
                 type="button"
                 onClick={() => handleStars(3)}
             >
-                {stars >= 3 ? (
+                {starCount >= 3 ? (
                     <IoStarSharp color="gold" size="30px"/>
                 ) : (
                     <IoStarOutline size="30px" />
@@ -49,7 +46,7 @@ function AlbumReviewFormStars({ onStarClick, starCount }) {
                 type="button"
                 onClick={() => handleStars(4)}
             >
-                {stars >= 4 ? (
+                {starCount >= 4 ? (
                     <IoStarSharp color="gold" size="30px"/>
                 ) : (
                     <IoStarOutline size="30px" />
@@ -60,7 +57,7 @@ function AlbumReviewFormStars({ onStarClick, starCount }) {
                 type="button"
                 onClick={() => handleStars(5)}
             >
-                {stars >= 5 ? (
+                {starCount >= 5 ? (
                     <IoStarSharp color="gold" size="30px"/>
                 ) : (
                     <IoStarOutline size="30px" />

@@ -7,7 +7,7 @@ function App() {
     <Router>
       <Navbar />
       <Routes>
-        <Route path="/album/:id" element={<AlbumPage />} />
+        <Route path="/album/:id" element={<AlbumPage currentUserId={1} />} />
       </Routes>
     </Router>
   );

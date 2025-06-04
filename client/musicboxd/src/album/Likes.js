@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { FaThumbsUp } from "react-icons/fa";
 
-function Likes({ likesCount, isLiked }) {
+function Likes({ likesCount, isLiked, disableLiking = false }) {
     const [likes, setLikes] = useState(likesCount);
     const [liked, setLiked] = useState(isLiked);
 
@@ -20,6 +20,7 @@ function Likes({ likesCount, isLiked }) {
             <button
                 className="d-flex flex-row gap-2 btn shadow-none"
                 onClick={() => handleLike()}
+                disabled={disableLiking}
             >
                 {liked ? (
                     <FaThumbsUp color="green" size="30px" />

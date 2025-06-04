@@ -1,14 +1,16 @@
 import { useState } from "react";
 import AlbumReviewFormStars from "./AlbumReviewFormStars";
+import { fetchAddReview, fetchUpdateReview } from "./fetchReview";
 
 const DEFAULT_REVIEW = {
     stars: 0,
     content: "",
 };
 
-function AlbumReviewForm({ review = DEFAULT_REVIEW }) {
-    const [currentReview, setCurrentReview] = useState(review);
+function AlbumReviewForm({ review = DEFAULT_REVIEW, albumId, userId, afterSubmit, onCancel }) {
+    const [currentReview, setCurrentReview] = useState(review === null ? DEFAULT_REVIEW : review);
     const [errors, setErrors] = useState([]);
+    const [disableSubmit, setDisableSubmit] = useState(false);
 
     function handleContentChange(event) {
         const rev = {...currentReview};
@@ -26,25 +28,106 @@ function AlbumReviewForm({ review = DEFAULT_REVIEW }) {
         setCurrentReview(rev);
     }
 
+    function handleCancel() {
+        if (onCancel) {
+            onCancel();
+        } else {
+            setCurrentReview(DEFAULT_REVIEW);
+        }
+    }
+
     function handleSubmit(event) {
         event.preventDefault();
+        setDisableSubmit(true);
 
-        console.log(currentReview);
+        const submitReview = {...currentReview};
+
+        if (review?.albumId) {
+            submitReview.albumId = review.albumId;
+        } else {
+            submitReview.albumId = albumId;
+        }
+
+        if (review?.userId) {
+            submitReview.userId = review.userId;
+        } else {
+            submitReview.userId = userId;
+        }
+
+        if (review == null) {
+            fetchAddReview(submitReview)
+                .then(response => {
+                    if (response.status === 201 || response.status === 400) {
+                        return response.json();
+                    } else {
+                        return Promise.reject("Bad status code " + response.status);
+                    }
+                })
+                .then(data => {
+                    if (data.reviewId) {
+                        if (afterSubmit != null) {
+                            afterSubmit(data);
+                        }
+                    } else {
+                        setErrors(data);
+                        setDisableSubmit(false);
+                    }
+                })
+                .catch(console.log);
+        } else {
+            fetchUpdateReview(submitReview)
+                .then(response => {
+                    if (response.status === 204) {
+                        return null;
+                    } else if (response.status === 400) {
+                        return response.json();
+                    } else {
+                        return Promise.reject("Bad status code " + response.status);
+                    }
+                })
+                .then(data => {
+                    if (data === null) {
+                        if (afterSubmit != null) {
+                            afterSubmit(submitReview);
+                        }
+                    } else {
+                        setErrors(data);
+                        setDisableSubmit(false);
+                    }
+                })
+                .catch(console.log);
+        }
+        
     }
 
     return (
-        <form onSubmit={handleSubmit}>
-            <fieldset>
-                <textarea className="w-100" id={`${review.userId}-content`} name="content" placeholder="Write your review here..." value={currentReview.content} onChange={handleContentChange}/>
-            </fieldset>
-            <div className="d-flex flex-row justify-content-between">
+        <div>
+            {errors.length >= 1 && (
+                <div className="text-danger">
+                    <p>The following errors were found with your review:</p>
+                    <ul>
+                        {errors.map((err, i) => (
+                            <li key={i}>{err}</li>
+                        ))}
+                    </ul>
+                </div>
+            )}
+            <form onSubmit={handleSubmit}>
                 <fieldset>
-                    <AlbumReviewFormStars onStarClick={handleStarChange} starCount={review.stars} />  
+                    <textarea className="w-100" style={{"height": "75px"}} id={`${currentReview.userId}-content`} name="content" placeholder="Write your review here..." value={currentReview.content} onChange={handleContentChange}/>
                 </fieldset>
-                <button type="submit" className="btn btn-primary">Submit</button>
-            </div>
-        </form>
-    )
+                <div className="d-flex flex-row justify-content-between">
+                    <fieldset>
+                        <AlbumReviewFormStars onStarClick={handleStarChange} starCount={currentReview.stars} />  
+                    </fieldset>
+                    <div className="d-flex flex-row gap-2">
+                        <button type="submit" className="btn btn-primary" disabled={disableSubmit}>Submit</button>
+                        <button type="button" className="btn btn-danger" disabled={disableSubmit} onClick={() => handleCancel()}>Cancel</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    );
 }
 
 export default AlbumReviewForm;
