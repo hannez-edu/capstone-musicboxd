@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import formatAlbumDate from "./album/formatAlbumDate";
 import AlbumCatalogBar from "./album/AlbumCatalogBar";
 import AlbumReviewForm from "./album/AlbumReviewForm";
@@ -21,13 +21,15 @@ function AlbumPage() {
 
     const [catalog, setCatalog] = useState(null);
 
+    const navigate = useNavigate();
+
     useEffect(() => {
         fetchAlbumById(id)
             .then(response => {
                 if (response.status === 200) {
                     return response.json();
                 } else if (response.status === 404) {
-                    return Promise.reject("Album not found.");
+                    return Promise.reject(response.status);
                 } else {
                     return Promise.reject("Bad status code " + response.status);
                 }
@@ -41,8 +43,12 @@ function AlbumPage() {
                 }
                 setShowMyReview(true);
             })
-            .catch(console.log);
-    }, [id, currentUserId]);
+            .catch(err => {
+                if (err === 404) {
+                    navigate("/album-not-found");
+                }
+            });
+    }, [id, currentUserId, navigate]);
 
     useEffect(() => {
         if (currentUserId > 0) {
