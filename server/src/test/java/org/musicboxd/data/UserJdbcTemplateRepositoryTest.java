@@ -3,6 +3,7 @@ package org.musicboxd.data;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.musicboxd.models.User;
+import org.musicboxd.models.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -24,12 +25,10 @@ public class UserJdbcTemplateRepositoryTest {
     void setup() {
         knownGoodState.set();
 
-        testUser = new User();
-        testUser.setUserName("t3st1ng");
+        testUser = new User("t3st1ng", "passwd", List.of(UserRole.USER));
         testUser.setEmail("test@test.xyz");
         testUser.setFirstName("Test");
         testUser.setLastName("Testing");
-        testUser.setPassword("$2a$04$tbG2yzNQQKuCJUXFL7KI9.ew5CYuynkMg05YlVb3eoVVq4BLQir1i");
     }
 
     @Test

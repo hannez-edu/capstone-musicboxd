@@ -5,6 +5,7 @@ import org.musicboxd.data.mappers.ReviewMapper;
 import org.musicboxd.models.Album;
 import org.musicboxd.models.Review;
 import org.musicboxd.models.User;
+import org.musicboxd.models.UserRole;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -98,9 +99,13 @@ public class AlbumJdbcTemplateRepository implements AlbumRepository {
             review.setContent(resultSet.getString("content"));
             review.setStars(resultSet.getInt("stars"));
 
-            User user = new User();
+            // Create a User object with the minimal constructor
+            User user = new User(
+                    resultSet.getString("user_name"),
+                    "", // We don't have the password in the result set
+                    List.of(UserRole.USER) // Default role
+            );
             user.setUserId(resultSet.getInt("user_id"));
-            user.setUserName(resultSet.getString("user_name"));
 
             review.setUser(user);
             review.setAlbum(null);
