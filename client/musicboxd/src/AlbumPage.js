@@ -116,7 +116,7 @@ function AlbumPage() {
     }
 
     return (
-        <div className={`d-flex flex-column gap-4 ${deletingAlbum && "border border-danger p-4"}`}>
+        <div className={`d-flex flex-column gap-4 ${deletingAlbum && "border border-danger p-4 mb-4"}`}>
             {deletingAlbum && (
                 <section id="confirmDeleteAlbum" className="d-flex flex-column align-items-center gap-4 text-danger">
                     <h1>Are you sure you want to delete this album?</h1>
