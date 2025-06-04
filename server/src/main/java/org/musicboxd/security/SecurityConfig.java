@@ -33,10 +33,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 .antMatchers("/api/user/authenticate").permitAll()
                 .antMatchers("/api/user/register").permitAll()
+                .antMatchers("/api/user/*").permitAll()
                 .antMatchers("/api/reviews").permitAll()
                 .antMatchers("/api/reviews/review=*").permitAll()
                 .antMatchers("/api/reviews/latestCount=*").permitAll()
+                .antMatchers("/api/reviews/**").permitAll()
                 .antMatchers("/api/albums").permitAll()
+                .antMatchers("/api/catalog/**").permitAll()
                 .antMatchers("/api/albums/album=*").permitAll()
                 .antMatchers("/api/catalog").permitAll()
                 .antMatchers("/api/user/delete/*").hasRole("ADMIN")
@@ -47,8 +50,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .addFilter(new JwtRequestFilter(authenticationManager(), converter))
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-
-//        http.addFilterBefore(new JwtRequestFilter(authenticationManager(), converter), BasicAuthenticationFilter.class);
     }
 
     @Override

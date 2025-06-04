@@ -30,7 +30,9 @@ album_id int auto_increment primary key,
 artist varchar(255) not null,
 title varchar(255) not null,
 release_date date not null,
-art_url varchar(500) null
+art_url varchar(500) null,
+
+unique key unique_album_artist (title, artist)
 );
 
 create table reviews (
@@ -81,3 +83,5 @@ constraint fk_catalog_entry_album foreign key (album_id) references albums(album
 
 unique key unique_user_album (user_id, album_id) -- one catalog entry per user per album
 );
+
+select * from albums;

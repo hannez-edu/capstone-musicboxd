@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { GlobalTokenID } from "./Login";
 
 function Navbar() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -11,6 +12,12 @@ function Navbar() {
       navigate(`/search?q=${encodeURIComponent(searchTerm.trim())}`);
     }
   };
+
+  // Check if user is logged in and get their ID
+  const isLoggedIn = GlobalTokenID.id && GlobalTokenID.token;
+  const userCatalogPath = isLoggedIn
+    ? `/catalog/${GlobalTokenID.id}`
+    : "/login";
 
   return (
     <>
@@ -30,7 +37,11 @@ function Navbar() {
           </button>
         </form>
         <Link to={"/login"}>Login</Link>
-        <Link to={"/catalog/current-user"}>My Catalog</Link>
+        {isLoggedIn ? (
+          <Link to={userCatalogPath}>My Catalog</Link>
+        ) : (
+          <Link to={"/login"}>My Catalog</Link>
+        )}
       </nav>
     </>
   );
