@@ -15,6 +15,14 @@ function CatalogPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Debug logging
+  console.log("CatalogPage Debug:", {
+    userId,
+    user,
+    userIdType: typeof userId,
+    userIdParsed: parseInt(userId),
+  });
+
   // Load all catalog data
   useEffect(() => {
     if (userId) {
@@ -31,6 +39,7 @@ function CatalogPage() {
           }
         })
         .then((userData) => {
+          console.log("User data loaded:", userData);
           setUser(userData);
 
           // Then fetch catalog entries for this user
@@ -161,7 +170,12 @@ function CatalogPage() {
     <div className="container mt-4">
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h1>{user?.userName}'s Catalog</h1>
-        <FollowButton username={user?.userName} />
+        <div>
+          <FollowButton
+            username={user?.userName}
+            targetUserId={parseInt(userId)}
+          />
+        </div>
       </div>
 
       <CatalogTabs activeTab={activeTab} onTabChange={setActiveTab} />
