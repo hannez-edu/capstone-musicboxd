@@ -4,10 +4,64 @@ import { Link, useNavigate } from "react-router-dom";
 const CREDS_DEFAULT = {
   username: "",
   password: "",
-  isAdmin: false
+};
+
+// Maintains logged-in user's state across pages
+const AuthService = {
+  setAuth: (id, token) => {
+    localStorage.setItem("userId", id.toString());
+    localStorage.setItem("authToken", token);
+    GlobalTokenID.id = id;
+    GlobalTokenID.token = token;
+    // The administrator account is *always* the first account
+    GlobalTokenID.isAdmin = parseInt(id) === 1;
+  },
+
+  getAuth: () => {
+    const id = localStorage.getItem("userId");
+    const token = localStorage.getItem("authToken");
+
+    if (id && token) {
+      const userId = parseInt(id);
+      GlobalTokenID.id = userId;
+      GlobalTokenID.token = token;
+      // The administrator account is *always* the first account
+      GlobalTokenID.isAdmin = userId === 1;
+      return { id: userId, token };
+    }
+    return null;
+  },
+
+  clearAuth: () => {
+    localStorage.removeItem("userId");
+    localStorage.removeItem("authToken");
+    GlobalTokenID.id = null;
+    GlobalTokenID.token = null;
+    GlobalTokenID.isAdmin = false;
+  },
+
+  isLoggedIn: () => {
+    const auth = AuthService.getAuth();
+    return auth && auth.token && auth.id;
+  },
+
+  getCurrentUserId: () => {
+    return GlobalTokenID.id;
+  },
+
+  getToken: () => {
+    return GlobalTokenID.token;
+  },
+
+  isAdmin: () => {
+    return GlobalTokenID.isAdmin;
+  },
 };
 
 const GlobalTokenID = {};
+
+// Initialize auth state from localStorage
+AuthService.getAuth();
 
 function Login() {
   // State
@@ -16,13 +70,20 @@ function Login() {
   const navigate = useNavigate();
   const url = "http://localhost:8080/api/user/authenticate";
 
+  // Check if already logged in on component mount
+  useEffect(() => {
+    if (AuthService.isLoggedIn()) {
+      navigate("/");
+    }
+  }, [navigate]);
+
   const handleSubmit = (event) => {
     event.preventDefault();
     authenticateUser();
   };
 
   const handleChange = (event) => {
-    const newCreds = {...credentials};
+    const newCreds = { ...credentials };
 
     newCreds[event.target.name] = event.target.value;
     setCredentials(newCreds);
@@ -31,33 +92,34 @@ function Login() {
   // Retrieves the token & userId, then sets those values to GlobalTokenID available as an export globally.
   const authenticateUser = () => {
     const post = {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(credentials)
+      body: JSON.stringify(credentials),
     };
 
     fetch(url, post)
-      .then(response => {
+      .then((response) => {
         if (response.status === 200) {
           setError(false);
           return response.json();
-        } else { // Login failed (403)
+        } else {
+          // Login failed (403)
           setError(true);
-          return Promise.reject(`Login failed! Status code: ${response.status}`);
+          return Promise.reject(
+            `Login failed! Status code: ${response.status}`
+          );
         }
       })
-      .then(data => { // Set 
-        GlobalTokenID.id = parseInt(data.id);
-        GlobalTokenID.token = data.jwt_token;
-        // The administrator account is *always* the first account
-        GlobalTokenID.isAdmin = parseInt(data.id) === 1;
+      .then((data) => {
+        // Use AuthService
+        AuthService.setAuth(parseInt(data.id), data.jwt_token);
         navigate("/");
       })
       .catch(console.log);
   };
-  
+
   return (
     <div className="container d-flex align-items-center justify-content-center">
       <section className="border rounded p-3 mt-5" id="userLoginFormContainer">
@@ -69,15 +131,41 @@ function Login() {
         )}
         <form className="" onSubmit={handleSubmit}>
           <fieldset className="mb-3">
-            <label className="form-label" htmlFor="username">Username</label>
-            <input className="form-control" type="text" id="username" name="username" value={credentials.username} onChange={handleChange} />
+            <label className="form-label" htmlFor="username">
+              Username
+            </label>
+            <input
+              className="form-control"
+              type="text"
+              id="username"
+              name="username"
+              value={credentials.username}
+              onChange={handleChange}
+            />
           </fieldset>
           <fieldset className="mb-3">
-            <label className="form-label" htmlFor="password">Password</label>
-            <input className="form-control" type="password" id="password" name="password" value={credentials.password} onChange={handleChange} />
+            <label className="form-label" htmlFor="password">
+              Password
+            </label>
+            <input
+              className="form-control"
+              type="password"
+              id="password"
+              name="password"
+              value={credentials.password}
+              onChange={handleChange}
+            />
           </fieldset>
-          <button className="btn btn-primary me-5" type="submit" id="formSubmit">Login</button>
-          <Link className="btn btn-secondary ms-5 float-end" to={`/register`}>Create New Account</Link>
+          <button
+            className="btn btn-primary me-5"
+            type="submit"
+            id="formSubmit"
+          >
+            Login
+          </button>
+          <Link className="btn btn-secondary ms-5 float-end" to={`/register`}>
+            Create New Account
+          </Link>
         </form>
       </section>
     </div>
@@ -85,4 +173,4 @@ function Login() {
 }
 
 export default Login;
-export { GlobalTokenID };
+export { GlobalTokenID, AuthService };
