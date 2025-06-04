@@ -3,7 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 
 const CREDS_DEFAULT = {
   username: "",
-  password: ""
+  password: "",
+  isAdmin: false
 };
 
 const GlobalTokenID = {};
@@ -50,6 +51,10 @@ function Login() {
       .then(data => { // Set 
         GlobalTokenID.id = parseInt(data.id);
         GlobalTokenID.token = data.jwt_token;
+        // The administrator account is *always* the first account
+        GlobalTokenID.isAdmin = parseInt(data.id) === 1;
+
+        console.log(JSON.stringify(GlobalTokenID));
         navigate("/");
       })
       .catch(console.log);
