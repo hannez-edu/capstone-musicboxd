@@ -2,6 +2,7 @@ package org.musicboxd.domain;
 
 import org.musicboxd.data.UserRepository;
 import org.musicboxd.models.User;
+import org.musicboxd.models.UserRole;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -9,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -19,6 +21,7 @@ public class UserService implements UserDetailsService {
     public UserService(UserRepository repository, PasswordEncoder encoder) {
         this.repository = repository;
         this.encoder = encoder;
+        ensureAdmin();
     }
 
     public List<User> findAll() {
@@ -153,5 +156,22 @@ public class UserService implements UserDetailsService {
         }
 
         return user;
+    }
+
+    private void ensureAdmin() {
+        User user = repository.findAll().stream()
+                .filter(u -> u.getUserName().equals("admin"))
+                .findFirst()
+                .orElse(null);
+
+        if (user == null) {
+            String randPass = UUID.randomUUID().toString();
+
+            user = new User(0, "admin", randPass, "admin@musicboxd.xyz", "Admin", "Admin", List.of(UserRole.ADMIN));
+
+            add(user);
+
+            System.out.printf("%n%nRandom admin password: %s%n%n", randPass);
+        }
     }
 }
