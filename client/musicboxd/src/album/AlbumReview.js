@@ -79,7 +79,7 @@ function AlbumReview({ review, afterDelete }) {
                 </p>
                 <div className="d-flex justify-content-between">
                     <div className="d-inline-flex gap-2">
-                        {!deleting && myReview?.userId === GlobalTokenID.id && (
+                        {!deleting && (myReview?.userId === GlobalTokenID.id || GlobalTokenID.isAdmin) && (
                             <button type="button" className="btn btn-danger" onClick={() => setDeleting(true)}>Delete</button>
                         )}
                         {!deleting && myReview?.userId === GlobalTokenID.id && (
