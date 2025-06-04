@@ -6,13 +6,15 @@ const CREDS_DEFAULT = {
   password: "",
 };
 
-// Maintains logged-in user's token auth state across pages
+// Maintains logged-in user's state across pages
 const AuthService = {
   setAuth: (id, token) => {
     localStorage.setItem("userId", id.toString());
     localStorage.setItem("authToken", token);
     GlobalTokenID.id = id;
     GlobalTokenID.token = token;
+    // The administrator account is *always* the first account
+    GlobalTokenID.isAdmin = parseInt(id) === 1;
   },
 
   getAuth: () => {
@@ -20,9 +22,12 @@ const AuthService = {
     const token = localStorage.getItem("authToken");
 
     if (id && token) {
-      GlobalTokenID.id = parseInt(id);
+      const userId = parseInt(id);
+      GlobalTokenID.id = userId;
       GlobalTokenID.token = token;
-      return { id: parseInt(id), token };
+      // The administrator account is *always* the first account
+      GlobalTokenID.isAdmin = userId === 1;
+      return { id: userId, token };
     }
     return null;
   },
@@ -32,17 +37,30 @@ const AuthService = {
     localStorage.removeItem("authToken");
     GlobalTokenID.id = null;
     GlobalTokenID.token = null;
+    GlobalTokenID.isAdmin = false;
   },
 
   isLoggedIn: () => {
     const auth = AuthService.getAuth();
     return auth && auth.token && auth.id;
   },
+
+  getCurrentUserId: () => {
+    return GlobalTokenID.id;
+  },
+
+  getToken: () => {
+    return GlobalTokenID.token;
+  },
+
+  isAdmin: () => {
+    return GlobalTokenID.isAdmin;
+  },
 };
 
 const GlobalTokenID = {};
 
-// Initialize auth state from localStorage on app load
+// Initialize auth state from localStorage
 AuthService.getAuth();
 
 function Login() {
