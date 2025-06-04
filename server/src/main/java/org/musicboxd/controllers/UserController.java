@@ -71,7 +71,7 @@ public class UserController {
 
         return ErrorResponse.build(result);
     }
-    
+
     @DeleteMapping("/delete/{userId}")
     public ResponseEntity<Void> deleteById(@PathVariable int userId) {
         Result<User> result = service.deleteById(userId);
@@ -93,6 +93,27 @@ public class UserController {
         }
 
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+    @DeleteMapping("/unfollow/{userId}")
+    public ResponseEntity<Object> unfollowUserById(@PathVariable int userId, @RequestBody Map<String, String> toUnfollow) {
+        int unfollowId = Integer.parseInt(toUnfollow.get("userId"));
+
+        Result<User> result = service.unfollowUserById(findById(userId), unfollowId);
+
+        if (result.getType() == ResultType.SUCCESS) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+    @GetMapping("/{userId}/following/{targetUserId}")
+    public ResponseEntity<Map<String, Boolean>> isFollowing(@PathVariable int userId, @PathVariable int targetUserId) {
+        boolean isFollowing = service.isFollowing(userId, targetUserId);
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("isFollowing", isFollowing);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     // AUTHENTICATION
