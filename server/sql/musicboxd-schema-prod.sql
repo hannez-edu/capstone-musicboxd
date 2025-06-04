@@ -83,3 +83,5 @@ constraint fk_catalog_entry_album foreign key (album_id) references albums(album
 
 unique key unique_user_album (user_id, album_id) -- one catalog entry per user per album
 );
+
+select * from albums;
