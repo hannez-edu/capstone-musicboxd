@@ -2,13 +2,8 @@ import { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import AlbumReview from "./album/AlbumReview";
 
-// TODO: Clicking on an album should navigate the user to the page corresponding to that album.
-// Would probably be easiest to do so via albumID. When doing an initial fetch, ensure that we store the ID along w/ the album object.
-//
-// TODO: Should probably include some album information / a cover on the reviews (clicking on those can also take the user to that album's page - maybe clicking on the username could take the user to that user's catalog?)
-
-// For the purposes of the Home page, we ignore firstReleased
 const TEMP_ALBUM = {
+    id: 1,
     title: "Test Album",
     artist: "Artist",
     firstReleasedDate: "2020-01-01",
@@ -16,6 +11,7 @@ const TEMP_ALBUM = {
 };
 
 const TEMP_REVIEW = {
+    id: 1,
     user: {
         userName: "User Name"
     },
@@ -31,54 +27,81 @@ function Home() {
   const [recentAlbums, setRecentAlbums] = useState([TEMP_ALBUM, TEMP_ALBUM, TEMP_ALBUM, TEMP_ALBUM, TEMP_ALBUM]); // Recently Listened By Followed (or in general) (Will need to know who the current user is for this if we do followed)
   const [latestReviewed, setLatestReviewed] = useState([TEMP_REVIEW, TEMP_REVIEW]); // Latest reviewed (~ 2 reviews should be fine)
   const navigate = useNavigate();
+  const albumUrl = "http://localhost:8080/api/albums";
+  const reviewUrl = "http://localhost:8080/api/reviews"
+
+  // Each of these should be run once on mount
+
+  // Fetch Albums (Both Popular & Recent)
+  useEffect(() => {
+    fetch(albumUrl)
+      .then(response => {
+        if (response.status === 200) {
+          return response.json();
+        } else {
+          return Promise.reject(`Unexpected Status Code: ${response.status}`);
+        }
+      })
+      .then(data => {
+        // TODO: Additional processing here to get "Popular" albums (by listened count?)
+        // TODO: Additional processing here to get "Recent" albums (could just grab the last 5 "listened" albums)
+        // TODO: Might cache these if we need to grab the album from the review so we don't need another fetch? *****
+      })
+      .catch(console.log);
+
+      // Fetch Reviews
+      fetch(reviewUrl)
+        .then(response => {
+          if (response.status === 200) {
+            return response.json();
+          } else {
+            return Promise.reject(`Unexpected Status Code: ${response.status}`);
+          }
+        })
+        .then(data => {
+          // TODO: Bundle the album with the review if the backend doesn't provide it.
+        })
+        .catch(console.log);
+  }, []);
+
+  const renderAlbums = (albums) => {
+    return (
+      <section className="container-fluid" id="popular">
+        <div className="row justify-content-center">
+          {albums.map(album => (
+            <div className="col" key={album.id}>
+              <div className="card border-0 vw-20">
+                <img className="card-img-top" src={album === null || isEmptyString(album.artUrl) ? "" : album.artUrl} alt="Album cover"/>
+                <div className="card-body text-center">
+                  <p className="text-center word-break fs-4">{album === null ? "loading title..." : album.title}</p>
+                  <p className="text-center word-break fs-5">{album === null ? "loading artist..." : album.artist}</p>
+                  <Link className="stretched-link" to={`/album/${album.id}`} />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    );
+  };
 
   return (
     <>
       <h2 className="mt-3 text-center">Popular</h2>
-      <section className="container-fluid" id="popular">
-        <div className="row justify-content-center">
-          {popular.map(album => (
-            <div className="col-2">
-              <div className="card" onClick={() => console.log("TODO: Go to album")}>
-                <img className="card-img-top w-100" src={album === null || isEmptyString(album.artUrl) ? "" : album.artUrl} alt="Album cover"/>
-                <div className="card-body text-center">
-                  <h4 className="text-center text-break">{album === null ? "loading title..." : album.title}</h4>
-                  <h5 className="text-center text-break">{album === null ? "loading artist..." : album.artist}</h5>
-                  <a href="#" className="stretched-link"></a>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+      {renderAlbums(popular)}
 
       <h2 className="mt-3 text-center">Recently Listened</h2>
-      <section className="container-fluid" id="recent">
-        <div className="row justify-content-center">
-          {recentAlbums.map(album => (
-            <div className="col-2">
-              <div className="card" onClick={() => console.log("TODO: Go to album")}>
-                <img className="card-img-top w-100" src={album === null || isEmptyString(album.artUrl) ? "" : album.artUrl} alt="Album cover"/>
-                <div className="card-body text-center">
-                  <h4 className="text-center">{album === null ? "loading title..." : album.title}</h4>
-                  <h5 className="text-center">{album === null ? "loading artist..." : album.artist}</h5>
-                  <a href="#" className="stretched-link"></a>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+      {renderAlbums(recentAlbums)}
 
       <h2 className="mt-3 text-center">Latest Reviews</h2>
       <section className="container-fluid" id="listened">
         <div className="row justify-content-center">
           {latestReviewed.map(review => (
-            <div className="col-5">
-              <div className="card" onClick={() => console.log("TODO: Go to album")}>
-                <img className="card-img-top w-100" src={TEMP_ALBUM.artUrl} alt="Album cover"/>
+            <div className="col" key={review.id}>
+              <div className="card border-0 vw-50">
+                <img className="card-img-top" src={TEMP_ALBUM.artUrl} alt="Album cover"/>
                 <AlbumReview className="card-body" review={review} />
-                <a href="#" className="stretched-link"></a>
+                <Link className="stretched-link" to={`/album/${review.albumId}`} />
               </div>
             </div>
           ))}
