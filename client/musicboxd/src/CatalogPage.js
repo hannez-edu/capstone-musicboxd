@@ -70,7 +70,7 @@ const TEMP_REVIEWS = [
     id: 1,
     content:
       "Proin leo odio, porttitor id, consequat in, consequat ut, nulla. Sed accumsan felis. Ut at dolor quis odio consequat varius. Integer ac leo. Pellentesque ultrices mattis odio. Donec vitae nisi. Nam ultrices, libero non mattis pulvinar, nulla pede ullamcorper augue, a suscipit nulla elit ac nulla. Sed vel enim sit amet nunc viverra dapibus. Nulla suscipit ligula in lacus.",
-    stars: 5,
+    stars: 1,
     likes: 23,
     likedByCurrentUser: true,
     user: {
