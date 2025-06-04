@@ -31,8 +31,19 @@ public class AlbumService {
             return result;
         }
 
-        Album added = repository.add(album);
-        result.setPayload(added);
+        // Deduplicate adds
+        Album dupe = findAll().stream()
+                .filter(a -> a.getArtist().equals(album.getArtist()) && a.getTitle().equals(album.getTitle()))
+                .findFirst()
+                .orElse(null);
+
+        if (dupe == null) {
+            Album added = repository.add(album);
+            result.setPayload(added);
+        } else {
+            result.setPayload(dupe);
+        }
+
         return result;
     }
 
