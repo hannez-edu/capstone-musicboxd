@@ -43,6 +43,7 @@ function Home() {
         }
       })
       .then(data => {
+        console.log(`ALBUMS: ${JSON.stringify(data)}`);
         // TODO: Additional processing here to get "Popular" albums (by listened count?)
         // TODO: Additional processing here to get "Recent" albums (could just grab the last 5 "listened" albums)
         // TODO: Might cache these if we need to grab the album from the review so we don't need another fetch? *****
@@ -59,7 +60,8 @@ function Home() {
           }
         })
         .then(data => {
-          // TODO: Bundle the album with the review if the backend doesn't provide it.
+          console.log(`REVIEWS: ${JSON.stringify(data)}`);
+          // TODO: Bundle the album with the review (for the image, mainly) if the backend doesn't provide it.
         })
         .catch(console.log);
   }, []);

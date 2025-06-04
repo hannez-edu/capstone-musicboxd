@@ -6,6 +6,8 @@ const CREDS_DEFAULT = {
   password: ""
 };
 
+const GlobalTokenID = {};
+
 function Login() {
   // State
   const [credentials, setCredentials] = useState(CREDS_DEFAULT);
@@ -25,8 +27,7 @@ function Login() {
     setCredentials(newCreds);
   };
 
-  // This will retrieve the token from the Backend when security is implemented by sending the username & password.
-  // TODO: Figure out how we're going to store the token & UserID after we retrieve it so it can be bundled as a header with all requests requiring authentication later ******************
+  // Retrieves the token & userId, then sets those values to GlobalTokenID available as an export globally.
   const authenticateUser = () => {
     const post = {
       method: 'POST',
@@ -38,7 +39,7 @@ function Login() {
 
     fetch(url, post)
       .then(response => {
-        if (response.status === 200) { // OK - must deal with token.
+        if (response.status === 200) {
           setError(false);
           return response.json();
         } else { // Login failed (403)
@@ -46,8 +47,9 @@ function Login() {
           return Promise.reject(`Login failed! Status code: ${response.status}`);
         }
       })
-      .then(data => { // Handle token & userID
-        console.log("TODO: Store token for use in the header of authenticated requests throughout application");
+      .then(data => { // Set 
+        GlobalTokenID.id = data.id;
+        GlobalTokenID.token = data.jwt_token;
       })
       .catch(console.log);
   };
@@ -79,3 +81,4 @@ function Login() {
 }
 
 export default Login;
+export { GlobalTokenID };
