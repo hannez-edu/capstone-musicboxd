@@ -168,7 +168,7 @@ public class ReviewJdbcTemplateRepository implements ReviewRepository {
                 "group by review_id;";
 
         int likes = jdbcTemplate.query(sql, (resultSet, i) -> resultSet.getInt("likes"), review.getReviewId())
-                .stream().findFirst().orElse(-1);
+                .stream().findFirst().orElse(0);
 
         review.setLikes(likes);
     }
