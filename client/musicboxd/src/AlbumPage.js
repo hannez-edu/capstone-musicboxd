@@ -5,15 +5,19 @@ import AlbumCatalogBar from "./album/AlbumCatalogBar";
 import AlbumReviewForm from "./album/AlbumReviewForm";
 import AlbumReview from "./album/AlbumReview";
 import { fetchAlbumById } from "./album/fetchAlbum";
+import { fetchCatalogByUserId } from "./album/fetchCatalog";
 
 function AlbumPage({ currentUserId }) {
     const { id } = useParams();
+
     const [album, setAlbum] = useState(null);
+
     const [reviews, setReviews] = useState([]);
     const [visibleReviews, setVisibleReviews] = useState([]);
-
     const [showMyReview, setShowMyReview] = useState(false);
     const [myReview, setMyReview] = useState(null);
+
+    const [catalog, setCatalog] = useState(null);
 
     useEffect(() => {
         fetchAlbumById(id)
@@ -39,6 +43,21 @@ function AlbumPage({ currentUserId }) {
     }, [id, currentUserId]);
 
     useEffect(() => {
+        fetchCatalogByUserId(currentUserId)
+            .then(response => {
+                if (response.status === 200) {
+                    return response.json();
+                } else {
+                    return Promise.reject("Bad status code " + response.status);
+                }
+            })
+            .then(data => {
+                setCatalog(data.find((cata) => cata.userId === currentUserId));
+            })
+            .catch(console.log);
+    }, [currentUserId]);
+
+    useEffect(() => {
         // For now, just grap the first 5 reviews to show to the user
         setVisibleReviews(reviews.slice(0, 5));
     }, [reviews]);
@@ -60,7 +79,9 @@ function AlbumPage({ currentUserId }) {
                     <h1>{album === null ? "Loading title..." : album.title}</h1>
                     <h3>{album === null ? "Loading artist..." : album.artist}</h3>
                     <h5>{album === null ? "MM/DD/YYYY" : formatAlbumDate(album.firstReleasedDate)}</h5>
-                    <AlbumCatalogBar />
+                    {currentUserId > 0 && (
+                        <AlbumCatalogBar catalog={catalog} currentUserId={currentUserId} albumId={album?.albumId} />
+                    )}
                 </div>
                 <div id="albumImage" className="d-flex w-50 justify-content-center">
                     <img
