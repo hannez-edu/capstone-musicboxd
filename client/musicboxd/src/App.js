@@ -14,7 +14,7 @@ function App() {
       <Navbar />
       <div className="container">
         <Routes>
-          <Route path="/album/:id" element={<AlbumPage currentUserId={1} />} />
+          <Route path="/album/:id" element={<AlbumPage />} />
           <Route path="/" element={<Home />} />
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />

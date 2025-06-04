@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import formatAlbumDate from "./album/formatAlbumDate";
 import AlbumCatalogBar from "./album/AlbumCatalogBar";
 import AlbumReviewForm from "./album/AlbumReviewForm";
 import AlbumReview from "./album/AlbumReview";
 import { fetchAlbumById } from "./album/fetchAlbum";
 import { fetchCatalogByUserId } from "./album/fetchCatalog";
+import { GlobalTokenID } from "./Login";
 
-function AlbumPage({ currentUserId }) {
+function AlbumPage() {
     const { id } = useParams();
+    const currentUserId = GlobalTokenID?.id == null ? 0 : GlobalTokenID.id;
 
     const [album, setAlbum] = useState(null);
 
@@ -19,13 +21,15 @@ function AlbumPage({ currentUserId }) {
 
     const [catalog, setCatalog] = useState(null);
 
+    const navigate = useNavigate();
+
     useEffect(() => {
         fetchAlbumById(id)
             .then(response => {
                 if (response.status === 200) {
                     return response.json();
                 } else if (response.status === 404) {
-                    return Promise.reject("Album not found.");
+                    return Promise.reject(response.status);
                 } else {
                     return Promise.reject("Bad status code " + response.status);
                 }
@@ -34,27 +38,37 @@ function AlbumPage({ currentUserId }) {
                 setAlbum(data);
                 if (data.reviews) {
                     // If there are reviews, we should set up the useStates
-                    setReviews(data.reviews.filter((rev) => rev.user.userId !== currentUserId));
+                    setReviews(data.reviews.filter((rev) => rev.user.userId !== currentUserId).sort((a, b) => b.likes - a.likes));
                     setMyReview(data.reviews.find((rev) => rev.user.userId === currentUserId));
                 }
                 setShowMyReview(true);
             })
-            .catch(console.log);
-    }, [id, currentUserId]);
+            .catch(err => {
+                if (err === 404) {
+                    navigate("/album-not-found");
+                }
+            });
+    }, [id, currentUserId, navigate]);
 
     useEffect(() => {
-        fetchCatalogByUserId(currentUserId)
-            .then(response => {
-                if (response.status === 200) {
-                    return response.json();
-                } else {
-                    return Promise.reject("Bad status code " + response.status);
-                }
-            })
-            .then(data => {
-                setCatalog(data.find((cata) => cata.userId === currentUserId));
-            })
-            .catch(console.log);
+        if (currentUserId > 0) {
+            fetchCatalogByUserId()
+                .then(response => {
+                    if (response.status === 200) {
+                        return response.json();
+                    } else if (response.status === 403 || response.status === 401) {
+                        return null;
+                    } else {
+                        return Promise.reject("Bad status code " + response.status);
+                    }
+                })
+                .then(data => {
+                    if (data) {
+                        setCatalog(data.find((cata) => cata.userId === currentUserId));
+                    }
+                })
+                .catch(console.log);
+        }
     }, [currentUserId]);
 
     useEffect(() => {
@@ -80,7 +94,7 @@ function AlbumPage({ currentUserId }) {
                     <h3>{album === null ? "Loading artist..." : album.artist}</h3>
                     <h5>{album === null ? "MM/DD/YYYY" : formatAlbumDate(album.firstReleasedDate)}</h5>
                     {currentUserId > 0 && (
-                        <AlbumCatalogBar catalog={catalog} currentUserId={currentUserId} albumId={album?.albumId} />
+                        <AlbumCatalogBar catalog={catalog} albumId={album?.albumId} />
                     )}
                 </div>
                 <div id="albumImage" className="d-flex w-50 justify-content-center">
@@ -96,9 +110,9 @@ function AlbumPage({ currentUserId }) {
             <section id="myReview">
                 <h2>{myReview == null ? "Make A Review" : "Your Review"}</h2>
                 {showMyReview && myReview != null ? (
-                    <AlbumReview review={myReview} currentUserId={currentUserId} afterDelete={handleDelete} />
+                    <AlbumReview review={myReview} afterDelete={handleDelete} />
                 ) : (
-                    <AlbumReviewForm userId={currentUserId} albumId={album?.albumId} review={myReview} afterSubmit={(review) => {
+                    <AlbumReviewForm albumId={album?.albumId} review={myReview} afterSubmit={(review) => {
                         setMyReview(review);
                         setShowMyReview(true);
                     }} />
@@ -109,7 +123,7 @@ function AlbumPage({ currentUserId }) {
                 <h2>Reviews</h2>
                 {visibleReviews.map((rev) => (
                     <div className="mb-4" key={rev.reviewId}>
-                        <AlbumReview review={rev} currentUserId={currentUserId} afterDelete={handleDelete} />
+                        <AlbumReview review={rev} afterDelete={handleDelete} />
                     </div>
                 ))}
             </section>

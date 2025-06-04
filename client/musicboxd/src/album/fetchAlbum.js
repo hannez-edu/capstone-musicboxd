@@ -1,6 +1,8 @@
+import { GlobalTokenID } from "../Login";
+
 const BASE_URL = "http://localhost:8080/api/albums";
 
-function fetchAlbumById(albumId, userId = 0) {
+function fetchAlbumById(albumId) {
     const init = {
         method: "GET",
         headers: {
@@ -8,7 +10,7 @@ function fetchAlbumById(albumId, userId = 0) {
         },
     };
 
-    return fetch(`${BASE_URL}/album=${albumId}&user=${userId}`, init);
+    return fetch(`${BASE_URL}/album=${albumId}&user=${GlobalTokenID?.id != null ? GlobalTokenID.id : 0}`, init);
 }
 
 function fetchAddAlbum(album) {
@@ -17,6 +19,7 @@ function fetchAddAlbum(album) {
         headers: {
             "Accept": "application/json",
             "Content-Type": "application/json",
+            "Authorization": "Bearer " + GlobalTokenID.token
         },
         body: JSON.stringify(album),
     };

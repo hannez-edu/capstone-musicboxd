@@ -104,6 +104,7 @@ public class ReviewJdbcTemplateRepository implements ReviewRepository {
         }
 
         review.setReviewId(keyHolder.getKey().intValue());
+        joinUser(review);
         return review;
     }
 
