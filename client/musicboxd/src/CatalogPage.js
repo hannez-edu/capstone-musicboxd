@@ -1,137 +1,134 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import CatalogTabs from "./catalog/CatalogTabs";
 import CatalogGrid from "./catalog/CatalogGrid";
 import CatalogReviewsGrid from "./catalog/CatalogReviewsGrid";
 import FollowButton from "./catalog/FollowButton";
 
-// Temp data for development
-const TEMP_USER = {
-  userName: "musiclover66",
-  id: 1,
-};
-
-const TEMP_LISTENED_ALBUMS = [
-  {
-    id: 1,
-    title: "The Dark Side of the Moon",
-    artist: "Pink Floyd",
-    artUrl: "http://dummyimage.com/100x100.png/cc0000/ffffff",
-  },
-  {
-    id: 2,
-    title: "Thriller",
-    artist: "Michael Jackson",
-    artUrl: "http://dummyimage.com/100x100.png/ff4444/ffffff",
-  },
-  {
-    id: 3,
-    title: "Abbey Road",
-    artist: "The Beatles",
-    artUrl: "http://dummyimage.com/100x100.png/dddddd/000000",
-  },
-  {
-    id: 4,
-    title: "Nevermind",
-    artist: "Nirvana",
-    artUrl: "http://dummyimage.com/100x100.png/5fa2dd/ffffff",
-  },
-];
-
-const TEMP_WANT_TO_LISTEN_ALBUMS = [
-  {
-    id: 5,
-    title: "OK Computer",
-    artist: "Radiohead",
-    artUrl: "http://dummyimage.com/100x100.png/ff4444/ffffff",
-  },
-  {
-    id: 6,
-    title: "Back in Black",
-    artist: "AC/DC",
-    artUrl: "http://dummyimage.com/100x100.png/5fa2dd/ffffff",
-  },
-  {
-    id: 7,
-    title: "The Joshua Tree",
-    artist: "U2",
-    artUrl: "http://dummyimage.com/100x100.png/dddddd/000000",
-  },
-  {
-    id: 8,
-    title: "Rumours",
-    artist: "Fleetwood Mac",
-    artUrl: "http://dummyimage.com/100x100.png/cc0000/ffffff",
-  },
-];
-
-const TEMP_REVIEWS = [
-  {
-    id: 1,
-    content:
-      "Proin leo odio, porttitor id, consequat in, consequat ut, nulla. Sed accumsan felis. Ut at dolor quis odio consequat varius. Integer ac leo. Pellentesque ultrices mattis odio. Donec vitae nisi. Nam ultrices, libero non mattis pulvinar, nulla pede ullamcorper augue, a suscipit nulla elit ac nulla. Sed vel enim sit amet nunc viverra dapibus. Nulla suscipit ligula in lacus.",
-    stars: 1,
-    likes: 23,
-    likedByCurrentUser: true,
-    user: {
-      id: 1,
-      userName: "musiclover66",
-    },
-    album: {
-      id: 1,
-      title: "The Dark Side of the Moon",
-      artist: "Pink Floyd",
-      artUrl: "http://dummyimage.com/100x100.png/cc0000/ffffff",
-    },
-  },
-  {
-    id: 2,
-    content:
-      "Nunc purus. Phasellus in felis. Donec semper sapien a libero. Nam dui. Proin leo odio, porttitor id, consequat in, consequat ut, nulla. Sed accumsan felis. Ut at dolor quis odio consequat varius.",
-    stars: 4,
-    likes: 15,
-    likedByCurrentUser: false,
-    user: {
-      id: 1,
-      userName: "musiclover66",
-    },
-    album: {
-      id: 2,
-      title: "Thriller",
-      artist: "Michael Jackson",
-      artUrl: "http://dummyimage.com/100x100.png/ff4444/ffffff",
-    },
-  },
-  {
-    id: 3,
-    content: "Nullam molestie nibh in lectus. Pellentesque at nulla.",
-    stars: 5,
-    likes: 18,
-    likedByCurrentUser: true,
-    user: {
-      id: 1,
-      userName: "musiclover66",
-    },
-    album: {
-      id: 3,
-      title: "Abbey Road",
-      artist: "The Beatles",
-      artUrl: "http://dummyimage.com/100x100.png/dddddd/000000",
-    },
-  },
-];
-
 function CatalogPage() {
-  const { username } = useParams();
-  const [user, setUser] = useState(TEMP_USER);
-  const [listenedAlbums, setListenedAlbums] = useState(TEMP_LISTENED_ALBUMS);
-  const [wantToListenAlbums, setWantToListenAlbums] = useState(
-    TEMP_WANT_TO_LISTEN_ALBUMS
-  );
-  const [reviews, setReviews] = useState(TEMP_REVIEWS);
+  const { userId } = useParams();
+  const [user, setUser] = useState(null);
+  const [listenedAlbums, setListenedAlbums] = useState([]);
+  const [wantToListenAlbums, setWantToListenAlbums] = useState([]);
+  const [reviews, setReviews] = useState([]);
   const [activeTab, setActiveTab] = useState("LISTENED");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Load all catalog data
+  useEffect(() => {
+    if (userId) {
+      setLoading(true);
+      setError(null);
+
+      // First, fetch the user by ID
+      fetch(`http://localhost:8080/api/user/${userId}`)
+        .then((response) => {
+          if (response.status === 200) {
+            return response.json();
+          } else {
+            return Promise.reject(`Unexpected Status Code: ${response.status}`);
+          }
+        })
+        .then((userData) => {
+          setUser(userData);
+
+          // Then fetch catalog entries for this user
+          return fetch(`http://localhost:8080/api/catalog/users/${userId}`)
+            .then((response) => {
+              if (response.status === 200) {
+                return response.json();
+              } else {
+                return Promise.reject(
+                  `Unexpected Status Code: ${response.status}`
+                );
+              }
+            })
+            .then((catalogEntries) => {
+              // Separate catalog entries by status
+              const listenedEntries = catalogEntries.filter(
+                (entry) => entry.status === "LISTENED"
+              );
+              const wantToListenEntries = catalogEntries.filter(
+                (entry) => entry.status === "WANT_TO_LISTEN"
+              );
+
+              // Get album details for listened albums
+              const listenedAlbumPromises = listenedEntries.map((entry) =>
+                fetch(
+                  `http://localhost:8080/api/albums/album=${entry.albumId}&user=${userId}`
+                ).then((response) => {
+                  if (response.status === 200) {
+                    return response.json();
+                  } else {
+                    return null; // Skip failed albums
+                  }
+                })
+              );
+
+              // Get album details for want-to-listen albums
+              const wantToListenAlbumPromises = wantToListenEntries.map(
+                (entry) =>
+                  fetch(
+                    `http://localhost:8080/api/albums/album=${entry.albumId}&user=${userId}`
+                  ).then((response) => {
+                    if (response.status === 200) {
+                      return response.json();
+                    } else {
+                      return null; // Skip failed albums
+                    }
+                  })
+              );
+
+              // Get user reviews
+              const reviewsPromise = fetch(
+                `http://localhost:8080/api/reviews/reviewer=${userId}&user=${userId}`
+              ).then((response) => {
+                if (response.status === 200) {
+                  return response.json();
+                } else {
+                  return []; // Return empty array if no reviews
+                }
+              });
+
+              // Wait for all album details and reviews
+              return Promise.all([
+                Promise.all(listenedAlbumPromises),
+                Promise.all(wantToListenAlbumPromises),
+                reviewsPromise,
+              ]);
+            })
+            .then(
+              ([listenedAlbumsData, wantToListenAlbumsData, reviewsData]) => {
+                // Filter out null albums
+                setListenedAlbums(
+                  listenedAlbumsData.filter((album) => album !== null)
+                );
+                setWantToListenAlbums(
+                  wantToListenAlbumsData.filter((album) => album !== null)
+                );
+                setReviews(reviewsData);
+                setLoading(false);
+              }
+            );
+        })
+        .catch((error) => {
+          console.log(error);
+          setError(error);
+          setLoading(false);
+        });
+    }
+  }, [userId]);
 
   const renderTabContent = () => {
+    if (loading) {
+      return <div className="text-center my-5">Loading...</div>;
+    }
+
+    if (error) {
+      return <div className="text-center my-5 text-danger">Error: {error}</div>;
+    }
+
     switch (activeTab) {
       case "LISTENED":
         return <CatalogGrid albums={listenedAlbums} />;
@@ -144,11 +141,27 @@ function CatalogPage() {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="container mt-4">
+        <div className="text-center">Loading catalog...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mt-4">
+        <div className="alert alert-danger">Error loading catalog: {error}</div>
+      </div>
+    );
+  }
+
   return (
     <div className="container mt-4">
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h1>{user.userName}'s Catalog</h1>
-        <FollowButton username={user.userName} />
+        <h1>{user?.userName}'s Catalog</h1>
+        <FollowButton username={user?.userName} />
       </div>
 
       <CatalogTabs activeTab={activeTab} onTabChange={setActiveTab} />

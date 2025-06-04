@@ -10,13 +10,20 @@ function CatalogGrid({ albums }) {
   return (
     <div className="row row-cols-2 row-cols-md-4 g-4">
       {albums.map((album) => (
-        <div key={album.id} className="col">
+        <div key={album.albumId} className="col">
           <div className="card h-100 border-0">
-            <Link to={`/album/${album.id}`}>
+            <Link to={`/album/${album.albumId}`}>
               <img
-                src={album.artUrl}
+                src={
+                  album.artUrl ||
+                  "http://dummyimage.com/100x100.png/dddddd/000000"
+                }
                 className="card-img-top"
                 alt={`${album.title} album cover`}
+                onError={(e) => {
+                  e.target.src =
+                    "http://dummyimage.com/100x100.png/dddddd/000000";
+                }}
               />
               <div className="card-body px-0">
                 <h5 className="card-title mb-0">{album.title}</h5>
