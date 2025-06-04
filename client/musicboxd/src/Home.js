@@ -25,7 +25,8 @@ const TEMP_REVIEW = {
     isTemp: true,
     album: {
       artUrl: "https://picsum.photos/id/77/500/500"
-    }
+    },
+    albumId: 0
 };
 
 function Home() {
@@ -146,8 +147,13 @@ function Home() {
           {latestReviewed.map((review, i) => (
             <div className="col" key={`${i}/${review.id}`}>
               <div className="card border-0">
-                <Link className="mb-2" to={`/album/${review.albumId}`}>
-                  <img className="card-img-top" src={review.album.artUrl} alt="Album cover"/>
+                <Link className="mb-2" to={`/album/${review?.albumId}`}>
+                  <img 
+                    title={`${review.album === null ? "loading title..." : review.album.title}\n${review.album === null ? "loading artist..." : review.album.artist}`}
+                    className="card-img-top" 
+                    src={review?.album?.artUrl == null ? "https://picsum.photos/id/77/500/500" : review.album.artUrl} 
+                    alt="Album cover"
+                  />
                 </Link>
                 <AlbumReview className="card-body" review={review} />
               </div>
