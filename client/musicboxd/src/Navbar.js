@@ -29,6 +29,7 @@ function Navbar() {
             Submit
           </button>
         </form>
+        <Link to={"/login"}>Login</Link>
         <Link to={"/catalog/current-user"}>My Catalog</Link>
       </nav>
     </>
