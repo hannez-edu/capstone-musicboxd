@@ -54,7 +54,6 @@ function Login() {
         // The administrator account is *always* the first account
         GlobalTokenID.isAdmin = parseInt(data.id) === 1;
 
-        console.log(JSON.stringify(GlobalTokenID));
         navigate("/");
       })
       .catch(console.log);
