@@ -11,7 +11,7 @@ function Login() {
   const [credentials, setCredentials] = useState(CREDS_DEFAULT);
   const [error, setError] = useState(false); // True if we encountered an error during a login attempt.
   const navigate = useNavigate();
-  const url = "http://localhost:8080/api/authenticate";
+  const url = "http://localhost:8080/api/user/authenticate";
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -26,7 +26,7 @@ function Login() {
   };
 
   // This will retrieve the token from the Backend when security is implemented by sending the username & password.
-  // TODO: Figure out how we're going to store the token after we retrieve it so it can be bundled as a header with all requests requiring authentication later ******************
+  // TODO: Figure out how we're going to store the token & UserID after we retrieve it so it can be bundled as a header with all requests requiring authentication later ******************
   const authenticateUser = () => {
     const post = {
       method: 'POST',
@@ -38,7 +38,7 @@ function Login() {
 
     fetch(url, post)
       .then(response => {
-        if (response.status !== 200) { // OK - must deal with token.
+        if (response.status === 200) { // OK - must deal with token.
           setError(false);
           return response.json();
         } else { // Login failed (403)
@@ -46,15 +46,14 @@ function Login() {
           return Promise.reject(`Login failed! Status code: ${response.status}`);
         }
       })
-      .then(data => { // Handle token - mapping between "jwt_token" & the token as a string.
-        console.log(`Got Token: ${data.jwt_token}`);
+      .then(data => { // Handle token & userID
         console.log("TODO: Store token for use in the header of authenticated requests throughout application");
       })
       .catch(console.log);
   };
   
   return (
-    <>
+    <div className="container d-flex align-items-center justify-content-center">
       <section className="border rounded p-3 mt-5" id="userLoginFormContainer">
         <h2 className="text-center mt-3">Welcome Back!</h2>
         {error && (
@@ -71,11 +70,11 @@ function Login() {
             <label className="form-label" htmlFor="password">Password</label>
             <input className="form-control" type="password" id="password" name="password" value={credentials.password} onChange={handleChange} />
           </fieldset>
-          <button className="btn" type="submit" id="formSubmit">Login</button>
-          <Link className="btn float-end" to={`/register`}>Create New Account</Link>
+          <button className="btn btn-primary me-5" type="submit" id="formSubmit">Login</button>
+          <Link className="btn btn-secondary ms-5 float-end" to={`/register`}>Create New Account</Link>
         </form>
       </section>
-    </>
+    </div>
   );
 }
 

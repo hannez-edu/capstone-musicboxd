@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 const USER_DETAILS_DEFAULT = {
-  username: "",
+  userName: "",
   password: "",
-  confirm: "", // This field doesn't need to be sent to the server, may want to strip it before it's embedded in the post body
+  confirm: "",
   email: "",
   firstName: "",
   lastName: ""
@@ -14,8 +14,9 @@ function Register() {
   // State
   const [userDetails, setUserDetails] = useState(USER_DETAILS_DEFAULT);
   const [errors, setErrors] = useState([]); // Registration validation errors
+  const [created, setCreated] = useState(false); // Set to true if an account was successfully created.
   const navigate = useNavigate();
-  const url = "http://localhost:8080/api/register";
+  const url = "http://localhost:8080/api/user/register";
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -37,7 +38,6 @@ function Register() {
   };
 
   // This just registers the user, it DOES NOT log them in!
-  // So, after we get a successful register, it may be a good idea to prompt the user to go to the login page & log in!
   const registerUser = () => {
     const post = {
       method: 'POST',
@@ -56,10 +56,9 @@ function Register() {
         }
       })
       .then(data => { // Handle token
-        if (data.jwt_token) { // If we got a token, we successfully registered a new account! Store it, then navigate home.
-          console.log(`Got Token: ${data.jwt_token}`);
-          console.log("TODO: Store token for use in the header of authenticated requests throughout application");
-          navigate('/');
+        if (data.userId) { // If we got a user back, we successfully registered a new account!
+          console.log(data);
+          setCreated(true);
         } else { // Validation errors!
           setErrors(data);
         }
@@ -68,8 +67,8 @@ function Register() {
   };
   
   return (
-    <>
-      <section className="border rounded p-3 mt-5" id="userLoginFormContainer">
+    <div className="container d-flex align-items-center justify-content-center">
+      <section className="border rounded p-3 mt-5 w-50" id="userLoginFormContainer">
         <h2 className="text-center mt-3">Create Account</h2>
         {errors.length > 0 && (
           <div className="alert alert-danger pt-1 pb-1" id="error">
@@ -79,10 +78,16 @@ function Register() {
             </ul>
           </div>
         )}
+        {created && (
+          <div className="alert alert-success pt-1 pb-1" id="">
+            <p className="text-center m-0">Account Successfully Created!</p>
+            <p className="text-center m-0">Log in & get reviewing!</p>
+          </div>
+        )}
         <form className="" onSubmit={handleSubmit}>
           <fieldset className="mb-3">
-            <label className="form-label" htmlFor="username">Username</label>
-            <input className="form-control" type="text" id="username" name="username" value={userDetails.username} onChange={handleChange} />
+            <label className="form-label" htmlFor="userName">Username</label>
+            <input className="form-control" type="text" id="userName" name="userName" value={userDetails.userName} onChange={handleChange} />
           </fieldset>
           <fieldset className="mb-3">
             <label className="form-label" htmlFor="password">Password</label>
@@ -104,11 +109,20 @@ function Register() {
             <label className="form-label" htmlFor="lastName">Last Name</label>
             <input className="form-control" type="text" id="lastName" name="lastName" value={userDetails.lastName} onChange={handleChange} />
           </fieldset>
-          <button className="btn" type="submit" id="formSubmit">Create Account</button>
-          <Link className="btn float-end" to={`/login`}>Have An Account? Log in Here!</Link>
+          {!created && (
+            <div>
+              <button className="btn btn-primary" type="submit" id="formSubmit">Create Account</button>
+              <Link className="btn btn-secondary float-end" to={`/login`}>Have An Account? Log in Here!</Link>
+            </div>
+          )}
+          {created && (
+            <div className="container d-flex align-items-center justify-content-center">
+              <Link className="btn btn-primary float-end" to={`/login`}>Log in Here!</Link>
+            </div>
+          )}
         </form>
       </section>
-    </>
+    </div>
   );
 }
 
