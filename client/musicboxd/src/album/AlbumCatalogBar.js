@@ -13,7 +13,7 @@ function AlbumCatalogBar({ catalog, albumId }) {
             setMyCatalog(catalog);
             setSelection(catalog.status);
         }
-    }, [catalog]);
+    }, [catalog, albumId]);
 
     function handleChange(event) {
         if (submitting) {

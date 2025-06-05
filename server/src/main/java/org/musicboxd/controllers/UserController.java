@@ -68,7 +68,10 @@ public class UserController {
     }
 
     @PutMapping("/update/{userId}")
-    public ResponseEntity<Object> update(@PathVariable int userId, @RequestBody User user) {
+    public ResponseEntity<Object> update(@PathVariable int userId, @RequestBody Map<String, String> userData) {
+        User user = new User(Integer.parseInt(userData.get("userId")), userData.get("userName"), userData.get("password"), userData.get("email"),
+                userData.get("firstName"), userData.get("lastName"), List.of(UserRole.USER));
+
         if (userId != user.getUserId()) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }

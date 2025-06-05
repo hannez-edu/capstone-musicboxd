@@ -4,9 +4,12 @@ import CatalogTabs from "./catalog/CatalogTabs";
 import CatalogGrid from "./catalog/CatalogGrid";
 import CatalogReviewsGrid from "./catalog/CatalogReviewsGrid";
 import FollowButton from "./catalog/FollowButton";
+import { AuthService } from "./Login";
+import UpdateUserButton from "./catalog/UpdateUserButton";
 
 function CatalogPage() {
   const { userId } = useParams();
+  const auth = AuthService.getAuth();
   const [user, setUser] = useState(null);
   const [listenedAlbums, setListenedAlbums] = useState([]);
   const [wantToListenAlbums, setWantToListenAlbums] = useState([]);
@@ -129,6 +132,18 @@ function CatalogPage() {
     }
   }, [userId]);
 
+  const updateParentInfo = (userDetails) => {
+    const newUser = {...user};
+
+    newUser.userName = userDetails.userName;
+    newUser.username = userDetails.username;
+    newUser.firstName = userDetails.firstName;
+    newUser.lastname = userDetails.lastName;
+    newUser.email = userDetails.email;
+
+    setUser(newUser);
+  }
+
   const renderTabContent = () => {
     if (loading) {
       return <div className="text-center my-5">Loading...</div>;
@@ -177,6 +192,8 @@ function CatalogPage() {
           />
         </div>
       </div>
+
+      <UpdateUserButton userId={parseInt(userId)} user={user} updateParentInfo={updateParentInfo} />
 
       <CatalogTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
