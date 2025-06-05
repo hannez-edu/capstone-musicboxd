@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSearchParams, Link, useNavigate } from "react-router-dom";
 import { fetchAddAlbum } from "./album/fetchAlbum";
 
@@ -6,6 +6,8 @@ function SearchResults() {
   const [searchParams] = useSearchParams();
   const [results, setResults] = useState([]);
   const [searching, setSearching] = useState(true); // Swaps to false when we're done searching to show a msg that we're searching.
+  const [, updateState] = useState();
+  const forceUpdate = useCallback(() => updateState({}), []);
   const navigate = useNavigate();
 
   const query = searchParams.get("q") || "";
@@ -14,8 +16,8 @@ function SearchResults() {
   const limit = "&limit=8&fmt=json";
 
   useEffect(() => {
-    // TODO: Could set the album cover to the placeholder immediately so we get that back ASAP, then we try to fetch the covers & update those once that fetch is over.
-      // Should make the load much snappier, since the MB queries actually load pretty quick, its the art that takes a bit.
+    setResults([]); // Clear on init
+    setSearching(true);
     let fetched = fetchAlbumSearch(query);
 
     const timeoutId = setTimeout(() => {
@@ -69,6 +71,7 @@ function SearchResults() {
         for (let i = 0; i < albums.length; i++) {
           albums[i].artUrl = await fetchArt(albums[i].albumId);
           returnedAlbums.push(albums[i]);
+          forceUpdate();
         }
         return returnedAlbums;
       })
@@ -110,6 +113,7 @@ function SearchResults() {
       })
       .then(data => {
         coverImg = data.images[0].thumbnails.small;
+        forceUpdate();
         return coverImg;
       })
       .catch(console.log);
