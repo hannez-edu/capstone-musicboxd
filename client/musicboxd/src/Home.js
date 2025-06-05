@@ -36,6 +36,7 @@ function Home() {
   const [recentAlbums, setRecentAlbums] = useState([TEMP_ALBUM, TEMP_ALBUM, TEMP_ALBUM, TEMP_ALBUM, TEMP_ALBUM]); // Recently Listened By Followed (or in general) (Will need to know who the current user is for this if we do followed)
   const [latestReviewed, setLatestReviewed] = useState([TEMP_REVIEW, TEMP_REVIEW]); // Latest reviewed (~ 2 reviews should be fine)
   const [allCatalogs, setAllCatalogs] = useState(null); // Used to determine other album-related states
+  const [hasFollowed, setHasFollowed] = useState(false); // False if user has no followers or is not logged in
   const navigate = useNavigate();
   const albumUrl = "http://localhost:8080/api/albums";
   const reviewUrl = "http://localhost:8080/api/reviews";
@@ -81,6 +82,9 @@ function Home() {
         // If the user isn't logged in, no need to fetch follow list.
         if (AuthService.getAuth() !== null) {
           following = await getFollowingIDList();
+          if (following.length > 0) {
+            setHasFollowed(true);
+          }
         }
         
         for (let album of popularityAlbums) {
@@ -123,6 +127,9 @@ function Home() {
           // If the user isn't logged in, no need to fetch follow list.
           if (AuthService.getAuth() !== null) {
             following = await getFollowingIDList();
+            if (following.length > 0) {
+              setHasFollowed(true);
+            }
           }
 
           // Don't filter if we aren't logged in (or if the user isn't following anyone yet!)
@@ -188,10 +195,21 @@ function Home() {
       <h2 className="mt-3 text-center">Popular</h2>
       {popular.isTemp == null && renderAlbums(popular, "popular")}
 
-      <h2 className="mt-3 text-center">Recently Listened</h2>
+      {!hasFollowed && (
+        <h2 className="mt-3 text-center">Recently Listened</h2>
+      )}
+      {hasFollowed && (
+        <h2 className="mt-3 text-center">Recently Listened to By Followed Users</h2>
+      )}
+      
       {recentAlbums.isTemp == null && renderAlbums(recentAlbums, "recent")}
 
-      <h2 className="mt-3 text-center">Latest Reviews</h2>
+      {!hasFollowed && (
+        <h2 className="mt-3 text-center">Latest Reviews</h2>
+      )}
+      {hasFollowed && (
+        <h2 className="mt-3 text-center">Latest Reviews By Followed Users</h2>
+      )}
       <section className="container-fluid mb-2" id="listened">
         <div className="row row-cols-2 justify-content-center">
           {latestReviewed.map((review, i) => (
