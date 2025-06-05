@@ -8,7 +8,7 @@ const DEFAULT_REVIEW = {
     content: "",
 };
 
-function AlbumReviewForm({ review, albumId, afterSubmit, onCancel }) {
+function AlbumReviewForm({ review, albumId, afterSubmit, onCancel, showCard = false }) {
     const [currentReview, setCurrentReview] = useState(review == null ? DEFAULT_REVIEW : review);
     const [errors, setErrors] = useState([]);
     const [disableSubmit, setDisableSubmit] = useState(false);
@@ -115,9 +115,9 @@ function AlbumReviewForm({ review, albumId, afterSubmit, onCancel }) {
                     </ul>
                 </div>
             )}
-            <form className="card p-2" onSubmit={handleSubmit}>
+            <form className={`${showCard && "card p-2"}`} onSubmit={handleSubmit}>
                 <fieldset>
-                    <textarea className="w-100" style={{"height": "75px"}} id={`${currentReview.userId}-content`} name="content" placeholder="Write your review here..." value={currentReview.content} onChange={handleContentChange}/>
+                    <textarea className="w-100 border border-dark" style={{"height": "75px"}} id={`${currentReview.userId}-content`} name="content" placeholder="Write your review here..." value={currentReview.content} onChange={handleContentChange}/>
                 </fieldset>
                 <div className="d-flex flex-row justify-content-between">
                     <fieldset>

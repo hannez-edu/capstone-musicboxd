@@ -56,6 +56,7 @@ function AlbumReview({ review, afterDelete }) {
                     setMyReview(rev);
                 }}
                 onCancel={() => setEditing(false)}
+                showCard={afterDelete}
             />
         ) : (
             <div className={`d-flex flex-column ${afterDelete && "card p-2"} ${deleting && "border border-danger p-2"}`}>
