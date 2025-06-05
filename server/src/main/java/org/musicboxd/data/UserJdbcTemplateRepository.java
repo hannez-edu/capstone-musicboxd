@@ -94,6 +94,11 @@ public class UserJdbcTemplateRepository implements UserRepository {
     @Override
     @Transactional
     public boolean deleteById(int userId) {
+        // Delete all review likes from reviews that the user made
+        List<Integer> reviewsByUser = jdbcTemplate.query("select review_id from reviews where user_id = ?;", (rs, i) -> {return rs.getInt("review_id");}, userId);
+        for (int i : reviewsByUser) {
+            jdbcTemplate.update("delete from review_likes where review_id = ?;", i);
+        }
         // Review & likes
         jdbcTemplate.update("delete from review_likes where user_id = ?;", userId);
         jdbcTemplate.update("delete from reviews where user_id = ?;", userId);

@@ -4,12 +4,10 @@ import CatalogTabs from "./catalog/CatalogTabs";
 import CatalogGrid from "./catalog/CatalogGrid";
 import CatalogReviewsGrid from "./catalog/CatalogReviewsGrid";
 import FollowButton from "./catalog/FollowButton";
-import { AuthService } from "./Login";
 import UpdateUserButton from "./catalog/UpdateUserButton";
 
 function CatalogPage() {
   const { userId } = useParams();
-  const auth = AuthService.getAuth();
   const [user, setUser] = useState(null);
   const [listenedAlbums, setListenedAlbums] = useState([]);
   const [wantToListenAlbums, setWantToListenAlbums] = useState([]);
@@ -17,6 +15,7 @@ function CatalogPage() {
   const [activeTab, setActiveTab] = useState("LISTENED");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [userWasDeleted, setUserWasDeleted] = useState(false);
 
   // Debug logging
   console.log("CatalogPage Debug:", {
@@ -126,7 +125,7 @@ function CatalogPage() {
         })
         .catch((error) => {
           console.log(error);
-          setError(error);
+          setError(JSON.stringify(error));
           setLoading(false);
         });
     }
@@ -181,6 +180,14 @@ function CatalogPage() {
     );
   }
 
+  if (userWasDeleted) {
+    return (
+      <div>
+        User was deleted.
+      </div>
+    );
+  }
+
   return (
     <div className="container mt-4">
       <div className="d-flex justify-content-between align-items-center mb-4">
@@ -193,7 +200,7 @@ function CatalogPage() {
         </div>
       </div>
 
-      <UpdateUserButton userId={parseInt(userId)} user={user} updateParentInfo={updateParentInfo} />
+      <UpdateUserButton userId={parseInt(userId)} user={user} updateParentInfo={updateParentInfo} deleteParentInfo={() => setUserWasDeleted(true)} />
 
       <CatalogTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
