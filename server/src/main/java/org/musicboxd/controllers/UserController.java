@@ -44,6 +44,15 @@ public class UserController {
         return service.findById(userId);
     }
 
+    @GetMapping("/{userId}/following")
+    public ResponseEntity<List<User>> getFollowing(@PathVariable int userId) {
+        User user = service.findById(userId);
+        if (user == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(user.getFollowing(), HttpStatus.OK);
+    }
+
     @PostMapping("/register")
     public ResponseEntity<Object> registerUser(@RequestBody Map<String, String> userData) {
         User user = new User(0, userData.get("userName"), userData.get("password"), userData.get("email"),
