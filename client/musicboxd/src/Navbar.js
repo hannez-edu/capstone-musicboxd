@@ -11,11 +11,13 @@ function Navbar() {
     e.preventDefault();
     if (searchTerm.trim()) {
       navigate(`/search?q=${encodeURIComponent(searchTerm.trim())}`);
+      setSearchTerm(""); // Clear search term after submission
     }
   };
 
   const handleLogout = () => {
     AuthService.clearAuth();
+    setSearchTerm(""); // Clear search when logging out
     navigate("/");
   };
 
@@ -49,7 +51,7 @@ function Navbar() {
             </button>
           </>
         ) : (
-          <Link to={"/login"}>Login</Link>
+          <Link to={"/login"} onClick={() => setSearchTerm("")}>Login</Link>
         )}
       </nav>
     </>
