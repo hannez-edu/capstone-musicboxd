@@ -115,7 +115,7 @@ function AlbumReviewForm({ review, albumId, afterSubmit, onCancel }) {
                     </ul>
                 </div>
             )}
-            <form onSubmit={handleSubmit}>
+            <form className="card p-2" onSubmit={handleSubmit}>
                 <fieldset>
                     <textarea className="w-100" style={{"height": "75px"}} id={`${currentReview.userId}-content`} name="content" placeholder="Write your review here..." value={currentReview.content} onChange={handleContentChange}/>
                 </fieldset>
