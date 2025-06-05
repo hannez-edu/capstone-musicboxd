@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthService } from "./Login";
+import { FaMagnifyingGlass } from "react-icons/fa6";
 
 function Navbar() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -29,7 +30,7 @@ function Navbar() {
         <h1>
           <Link to={"/"}>MusicBoxd</Link>
         </h1>
-        <form className="form-inline" onSubmit={handleSubmit}>
+        <form className="d-flex gap-2" onSubmit={handleSubmit}>
           <input
             type="search"
             placeholder="Search for an album..."
@@ -37,7 +38,7 @@ function Navbar() {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
           <button className="btn btn-outline-primary" type="submit">
-            Submit
+            <FaMagnifyingGlass size="20px" />
           </button>
         </form>
         {isLoggedIn ? (
