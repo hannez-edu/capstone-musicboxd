@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { AuthService } from "../Login";
+import { useNavigate } from "react-router-dom";
 
 const USER_DETAILS_DEFAULT = {
   userName: "",
@@ -12,12 +13,15 @@ const USER_DETAILS_DEFAULT = {
 
 const USER_API = "http://localhost:8080/api/user";
 
-function UpdateUserButton({ userId, user, updateParentInfo }) {
+function UpdateUserButton({ userId, user, updateParentInfo, deleteParentInfo }) {
     const [userDetails, setUserDetails] = useState(USER_DETAILS_DEFAULT);
     const [errors, setErrors] = useState([]);
 
     const auth = AuthService.getAuth();
     const [showForm, setShowForm] = useState(false);
+    const [showDeleteWarning, setShowDeleteWarning] = useState(false);
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         const newUserDetails = {
@@ -57,8 +61,6 @@ function UpdateUserButton({ userId, user, updateParentInfo }) {
             body: JSON.stringify(sendUser)
         };
 
-        console.log(init);
-
         fetch(`${USER_API}/update/${userId}`, init)
             .then(response => {
                 if (response.status === 204) {
@@ -82,12 +84,56 @@ function UpdateUserButton({ userId, user, updateParentInfo }) {
             .catch(console.log);
     }
 
+    function handleDeleteSubmit() {
+        const init = {
+            method: "DELETE",
+            headers: {
+                "Authorization": "Bearer " + auth.token
+            }
+        };
+
+        fetch(`${USER_API}/delete/${userId}`, init)
+            .then(response => {
+                if (response.status === 204) {
+                    if (!AuthService.isAdmin()) {
+                        // User delete their own account, so log them out
+                        AuthService.clearAuth();
+                        navigate("/");
+                    } else if (deleteParentInfo) {
+                        deleteParentInfo();
+                    }
+                } else if (response.status === 401 || response.status === 403) {
+                    return Promise.reject("You are not authorized to delete this user.");
+                } else if (response.status === 404) {
+                    return Promise.reject("User not found when deleting.");
+                } else {
+                    return Promise.reject("Bad status code " + response.status);
+                }
+            })
+            .catch(window.alert);
+    }
+
     return (
         <>
         {(auth.id === parseInt(userId) || AuthService.isAdmin()) && (
             <div className="mb-4 w-100">
-                {auth.id === parseInt(userId) && (
-                    <button type="button" className="btn btn-warning" onClick={() => setShowForm(!showForm)}>Update Information</button>
+                <div className="d-flex flex-row gap-4">
+                    {auth.id === parseInt(userId) && (
+                        <button type="button" className="btn btn-warning" onClick={() => setShowForm(!showForm)}>Update Information</button>
+                    )}
+                    {(auth.id === parseInt(userId) || AuthService.isAdmin()) && parseInt(userId) !== 1 && (
+                        <button type="button" className="btn btn-danger" onClick={() => setShowDeleteWarning(!showDeleteWarning)}>Delete Account</button>
+                    )}
+                </div>
+                {showDeleteWarning && (
+                    <section className="d-flex flex-column gap-3 mt-4 align-items-center border border-danger p-2 w-100 text-danger">
+                        <h3>Delete '{user.userName}' Account Confirmation</h3>
+                        <p>Are you sure you want to delete the account {user.userName}?</p>
+                        <div className="d-flex flex-row gap-4">
+                            <button type="button" className="btn btn-primary" onClick={() => handleDeleteSubmit()}>Confirm</button>
+                            <button type="button" className="btn btn-danger" onClick={() => setShowDeleteWarning(false)}>Cancel</button>
+                        </div>
+                    </section>
                 )}
                 {showForm && (
                     <section className="d-flex flex-column gap-3 mt-4 border border-dark p-2 w-100">
