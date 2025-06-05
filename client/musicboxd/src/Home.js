@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import AlbumReview from "./album/AlbumReview";
 import { fetchLatestReviews } from "./album/fetchReview";
+import { AuthService } from "./Login";
 
 const TEMP_ALBUM = {
     id: 1,
@@ -39,6 +40,7 @@ function Home() {
   const albumUrl = "http://localhost:8080/api/albums";
   const reviewUrl = "http://localhost:8080/api/reviews";
   const catalogUrl = "http://localhost:8080/api/catalog";
+  const userUrl = "http://localhost:8080/api/user";
 
   // Each of these should be run once on mount
 
@@ -71,23 +73,34 @@ function Home() {
           return Promise.reject(`Unexpected Status Code: ${response.status}`);
         }
       })
-      .then(data => {
-        // TODO: Additional processing here to get "Popular" albums (by listened count?)
+      .then(async data => {
+
+        let following = [];      
         const popularityAlbums = JSON.parse(JSON.stringify(data));
+
+        // If the user isn't logged in, no need to fetch follow list.
+        if (AuthService.getAuth() !== null) {
+          following = await getFollowingIDList();
+        }
+        
         for (let album of popularityAlbums) {
           album.popularity = allCatalogs.filter((cata) => cata.albumId === album.albumId).length;
         }
         setPopular(popularityAlbums.sort((a, b) => b.popularity - a.popularity).slice(0, 5));
-        // TODO: Additional processing here to get "Recent" albums (could just grab the last 5 "listened" albums)
+        
         const recentListenedAlbums = new Set();
         for (let i = allCatalogs.length - 1; i >= 0; i--) {
-          recentListenedAlbums.add(allCatalogs[i].albumId);
+          // If the user isn't logged in, display all
+          // If they ARE logged in, only add the album if the current user or a followed user has listened to that album
+          if (following.length === 0 || following.includes(allCatalogs[i].userId) || allCatalogs[i].userId === AuthService.getCurrentUserId()) {
+             recentListenedAlbums.add(allCatalogs[i].albumId); 
+          }
           if (recentListenedAlbums.size >= 5) {
             break;
           }
         }
         setRecentAlbums(data.filter((alb) => recentListenedAlbums.has(alb.albumId)));
-        // TODO: Might cache these if we need to grab the album from the review so we don't need another fetch? *****
+
       })
       .catch(console.log);
 
@@ -96,7 +109,42 @@ function Home() {
 
   useEffect(() => {
     // Fetch Reviews
-    fetchLatestReviews(2)
+    fetchLatestReviews(10)
+      .then(response => {
+        if (response.status === 200) {
+          return response.json();
+        } else {
+          return Promise.reject(`Unexpected Status Code: ${response.status}`);
+        }
+      })
+      .then(async data => {
+        if (data) {
+          let following = [];
+          // If the user isn't logged in, no need to fetch follow list.
+          if (AuthService.getAuth() !== null) {
+            following = await getFollowingIDList();
+          }
+
+          // Don't filter if we aren't logged in (or if the user isn't following anyone yet!)
+          // If we are logged in, filter by reviews belonging to the followed users & the current user
+          setLatestReviewed(data.filter(review => {
+            return following.length === 0 || following.includes(review.userId) || review.userId === AuthService.getCurrentUserId();
+          }).slice(0, 2));
+        }
+      })
+      .catch(console.log);
+  }, []);
+
+  const getFollowingIDList = async () => {
+    const init = {
+      method: "get",
+      headers: {
+          "accept": "application/json",
+          "Authorization": "Bearer " + AuthService.getAuth().token
+      },
+    };
+
+    return fetch(userUrl + "/" + AuthService.getAuth().id + "/following", init)
       .then(response => {
         if (response.status === 200) {
           return response.json();
@@ -105,12 +153,14 @@ function Home() {
         }
       })
       .then(data => {
-        if (data) {
-          setLatestReviewed(data);
+        if(data) {
+          data = data.map(d => d.userId);
+          return data;
         }
-      })
-      .catch(console.log);
-  }, []);
+      });
+  };
+
+
 
   const renderAlbums = (albums, extraKey) => {
     return (

@@ -153,7 +153,8 @@ public class UserJdbcTemplateRepository implements UserRepository {
         RowMapper<Integer> rowMapper = (rs, rowNum) -> rs.getInt("follower_id");
 
         final String sql = "select user_id, user_name, email, password_hash, first_name, last_name from users " +
-                "inner join `following` on `following`.follower_id = ?;";
+                "inner join following on users.user_id = following.followed_id " +
+                "where following.follower_id = ?;";
 
         List<User> following = jdbcTemplate.query(sql, new UserMapper(), user.getUserId());
         user.setFollowing(following);
