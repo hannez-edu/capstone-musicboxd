@@ -69,7 +69,7 @@ function AlbumReview({ review, afterDelete }) {
                     </>
                 )}
                 <div name="review heading" className="d-flex flex-row justify-content-between">
-                    <Link to={myReview?.userId !== GlobalTokenID.id ? `/catalog/${myReview?.userId}` : "/catalog/current-user"}>
+                    <Link to={`/catalog/${myReview?.userId}`}>
                         <h5>{myReview?.user?.userName}</h5>
                     </Link>
                     <Stars starCount={myReview.stars} />
@@ -79,7 +79,7 @@ function AlbumReview({ review, afterDelete }) {
                 </p>
                 <div className="d-flex justify-content-between">
                     <div className="d-inline-flex gap-2">
-                        {!deleting && myReview?.userId === GlobalTokenID.id && (
+                        {!deleting && (myReview?.userId === GlobalTokenID.id || GlobalTokenID.isAdmin) && (
                             <button type="button" className="btn btn-danger" onClick={() => setDeleting(true)}>Delete</button>
                         )}
                         {!deleting && myReview?.userId === GlobalTokenID.id && (
