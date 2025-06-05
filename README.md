@@ -60,9 +60,9 @@
         * [X] Search (1.0hrs)
     * [x] Integrate External API For Album Information Fetching (1.5hrs)
     * [x] React Routing (1.0hrs)
-    * [ ] Styling (2.5hrs)
+    * [x] Styling (2.5hrs)
     * [ ] Stylistic Cleanup (1.0hrs)
-* [ ] Integration
-    * [ ] Test Frontend against Backend (2.0hrs)
+* [x] Integration
+    * [x] Test Frontend against Backend (2.0hrs)
     * [x] Security integration
 * [ ] Final Tests & Cleanup (2.5hrs)
