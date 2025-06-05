@@ -21,7 +21,6 @@ function SearchResults() {
     let fetched = fetchAlbumSearch(query);
 
     const timeoutId = setTimeout(() => {
-      console.log(fetched);
       setSearching(false);
       setResults(fetched);
     }, 3000);
@@ -120,7 +119,6 @@ function SearchResults() {
   };
 
   const handleAlbumClick = (album) => {
-    console.log(`Album clicked: ${album.title} by ${album.artist} on ${album.firstReleaseDate}`);
     album.albumId = 0; // Clear ID to something the backend can parse properly
     
     fetchAddAlbum(album)
@@ -129,14 +127,10 @@ function SearchResults() {
       })
       .then(data => {
         if (data.albumId) {
-          console.log("DEBUG: Data received");
-          console.log(JSON.stringify(data));
           navigate(`/album/${data.albumId}`);
         }
       })
       .catch(console.log);
-      
-    // Then, the Link should navigate us to the correct in-DB album page!
   };
 
   return (
