@@ -127,7 +127,8 @@ function Home() {
           // If the user isn't logged in, no need to fetch follow list.
           if (AuthService.getAuth() !== null) {
             following = await getFollowingIDList();
-            if (following.length > 0) {
+            // If the token expired, skip following.
+            if (AuthService.getAuth() !== null && following.length > 0) {
               setHasFollowed(true);
             }
           }
@@ -155,6 +156,10 @@ function Home() {
       .then(response => {
         if (response.status === 200) {
           return response.json();
+        } else if (AuthService.isLoggedIn() && response.status === 403) {
+          AuthService.clearAuth();
+          navigate("/");
+          return Promise.reject("Token expired.");
         } else {
           return Promise.reject(`Unexpected Status Code: ${response.status}`);
         }
@@ -164,7 +169,8 @@ function Home() {
           data = data.map(d => d.userId);
           return data;
         }
-      });
+      })
+      .catch(console.log);
   };
 
 

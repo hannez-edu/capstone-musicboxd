@@ -67,6 +67,10 @@ function UpdateUserButton({ userId, user, updateParentInfo, deleteParentInfo }) 
                     return null;
                 } else if (response.status === 400) {
                     return response.json();
+                } else if (response.status === 403) {
+                    AuthService.clearAuth();
+                    navigate(`/catalog/${userId}`);
+                    return Promise.reject("You have been logged out due to time.");
                 } else {
                     return Promise.reject("Bad status code " + response.status);
                 }
@@ -115,13 +119,13 @@ function UpdateUserButton({ userId, user, updateParentInfo, deleteParentInfo }) 
 
     return (
         <>
-        {(auth.id === parseInt(userId) || AuthService.isAdmin()) && (
+        {(auth?.id === parseInt(userId) || AuthService.isAdmin()) && (
             <div className="mb-4 w-100">
                 <div className="d-flex flex-row gap-4">
-                    {auth.id === parseInt(userId) && (
+                    {auth?.id === parseInt(userId) && (
                         <button type="button" className="btn btn-warning" onClick={() => setShowForm(!showForm)}>Update Information</button>
                     )}
-                    {(auth.id === parseInt(userId) || AuthService.isAdmin()) && parseInt(userId) !== 1 && (
+                    {(auth?.id === parseInt(userId) || AuthService.isAdmin()) && parseInt(userId) !== 1 && (
                         <button type="button" className="btn btn-danger" onClick={() => setShowDeleteWarning(!showDeleteWarning)}>Delete Account</button>
                     )}
                 </div>
