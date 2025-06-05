@@ -66,12 +66,13 @@ function AlbumPage() {
                 })
                 .then(data => {
                     if (data) {
-                        setCatalog(data.find((cata) => cata.userId === currentUserId));
+                        const albumId = parseInt(id);
+                        setCatalog(data.find((cata) => cata.userId === currentUserId && cata.albumId === albumId));
                     }
                 })
                 .catch(console.log);
         }
-    }, [currentUserId]);
+    }, [currentUserId, id]);
 
     useEffect(() => {
         // For now, just grap the first 5 reviews to show to the user
@@ -133,7 +134,7 @@ function AlbumPage() {
                     <h3>{album === null ? "Loading artist..." : album.artist}</h3>
                     <h5>{album === null ? "MM/DD/YYYY" : formatAlbumDate(album.firstReleaseDate)}</h5>
                     {currentUserId > 0 && (
-                        <AlbumCatalogBar catalog={catalog} albumId={album?.albumId} />
+                        <AlbumCatalogBar catalog={catalog} albumId={id} />
                     )}
                     {GlobalTokenID.isAdmin && !deletingAlbum && (
                         <div className="d-flex-inline">
