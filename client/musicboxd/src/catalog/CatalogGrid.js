@@ -8,11 +8,11 @@ function CatalogGrid({ albums }) {
   }
 
   return (
-    <section className="container-fluid">
-      <div className="row row-cols-5 justify-content-center">
-        {albums.map((album) => (
-          <div key={album.albumId} className="col">
-            <div className="card border-0">
+    <div className="row row-cols-2 row-cols-md-4 g-4">
+      {albums.map((album) => (
+        <div key={album.albumId} className="col">
+          <div className="card h-100 border-0">
+            <Link to={`/album/${album.albumId}`}>
               <img
                 src={
                   album.artUrl ||
@@ -25,19 +25,15 @@ function CatalogGrid({ albums }) {
                     "http://dummyimage.com/100x100.png/dddddd/000000";
                 }}
               />
-              <div className="card-body text-center">
-                <p className="text-center word-break fs-4">{album.title}</p>
-                <p className="text-center word-break fs-5">{album.artist}</p>
-                <Link
-                  className="stretched-link"
-                  to={`/album/${album.albumId}`}
-                />
+              <div className="card-body px-0">
+                <h5 className="card-title mb-0">{album.title}</h5>
+                <p className="card-text text-muted">{album.artist}</p>
               </div>
-            </div>
+            </Link>
           </div>
-        ))}
-      </div>
-    </section>
+        </div>
+      ))}
+    </div>
   );
 }
 

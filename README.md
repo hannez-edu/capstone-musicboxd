@@ -44,7 +44,7 @@
         * [X] SecurityConfig (0.5hrs)
         * [X] JwtRequestFilter (0.5hrs)
         * [X] Integrate Security Components into User (1.0hrs)
-* [x] Frontend Implementation
+* [ ] Frontend Implementation
     * [X] React Structure
         * [X] Create React Project (0.2hrs)
         * [X] Clean Up Cruft (0.25hrs)
@@ -58,11 +58,11 @@
         * [X] Login (1.0hrs)
         * [X] Create Account (1.0hrs)
         * [X] Search (1.0hrs)
-    * [x] Integrate External API For Album Information Fetching (1.5hrs)
-    * [x] React Routing (1.0hrs)
-    * [x] Styling (2.5hrs)
-    * [x] Stylistic Cleanup (1.0hrs)
-* [x] Integration
-    * [x] Test Frontend against Backend (2.0hrs)
-    * [x] Security integration
-* [x] Final Tests & Cleanup (2.5hrs)
+    * [ ] Integrate External API For Album Information Fetching (1.5hrs)
+    * [ ] React Routing (1.0hrs)
+    * [ ] Styling (2.5hrs)
+    * [ ] Stylistic Cleanup (1.0hrs)
+* [ ] Integration
+    * [ ] Test Frontend against Backend (2.0hrs)
+    * [ ] Security integration
+* [ ] Final Tests & Cleanup (2.5hrs)

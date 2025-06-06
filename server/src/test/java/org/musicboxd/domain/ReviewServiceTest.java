@@ -37,25 +37,6 @@ class ReviewServiceTest {
         assertEquals(2, all.size());
     }
 
-    /* FindLatest */
-
-    @Test
-    public void shouldFindLatest() {
-        when(repository.findLatest(anyInt(), anyInt())).thenReturn(List.of(makeReview(), makeReview()));
-
-        List<Review> latest = service.findLatest(2, 0);
-
-        assertNotNull(latest);
-        assertEquals(2, latest.size());
-    }
-
-    @Test
-    public void shouldNotFindInvalidLatest() {
-        List<Review> latest = service.findLatest(-1, 0);
-
-        assertNull(latest);
-    }
-
     /* FindById */
 
     @Test

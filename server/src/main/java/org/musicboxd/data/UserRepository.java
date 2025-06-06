@@ -16,8 +16,4 @@ public interface UserRepository {
     boolean deleteById(int userId);
 
     boolean followUserById(User user, int userId);
-
-    boolean unfollowUserById(User user, int userId);
-
-    boolean isFollowing(int followerId, int followedId);
 }

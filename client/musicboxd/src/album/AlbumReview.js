@@ -9,7 +9,6 @@ import { Link } from "react-router-dom";
 function AlbumReview({ review, afterDelete }) {
     const [editing, setEditing] = useState(false);
     const [deleting, setDeleting] = useState(false);
-    const [wasDeleted, setWasDeleted] = useState(false);
     const [deleteInProgress, setDeleteInProgress] = useState(false);
     const [myReview, setMyReview] = useState(review);
 
@@ -27,8 +26,6 @@ function AlbumReview({ review, afterDelete }) {
                 if (response.status === 204) {
                     if (afterDelete) {
                         afterDelete(myReview.reviewId);
-                    } else {
-                        setWasDeleted(true);
                     }
                 } else {
                     setDeleteInProgress(false);
@@ -36,14 +33,6 @@ function AlbumReview({ review, afterDelete }) {
                 }
             })
             .catch(console.log);
-    }
-
-    if (wasDeleted) {
-        return (
-            <div>
-                Review was deleted.
-            </div>
-        );
     }
 
     return (
@@ -56,10 +45,9 @@ function AlbumReview({ review, afterDelete }) {
                     setMyReview(rev);
                 }}
                 onCancel={() => setEditing(false)}
-                showCard={afterDelete}
             />
         ) : (
-            <div className={`d-flex flex-column ${afterDelete && "card p-2"} ${deleting && "border border-danger p-2"}`}>
+            <div className={`d-flex flex-column ${deleting && "border border-danger p-2"}`}>
                 {deleting && (
                     <>
                         <h3 className="text-danger">Are you sure you want to delete the following review?</h3>
@@ -70,7 +58,7 @@ function AlbumReview({ review, afterDelete }) {
                     </>
                 )}
                 <div name="review heading" className="d-flex flex-row justify-content-between">
-                    <Link to={`/catalog/${myReview?.userId}`}>
+                    <Link to={myReview?.user?.userName != null && myReview?.userId !== GlobalTokenID.id ? `/catalog/${myReview?.user?.userName}` : "/catalog/current-user"}>
                         <h5>{myReview?.user?.userName}</h5>
                     </Link>
                     <Stars starCount={myReview.stars} />
@@ -80,7 +68,7 @@ function AlbumReview({ review, afterDelete }) {
                 </p>
                 <div className="d-flex justify-content-between">
                     <div className="d-inline-flex gap-2">
-                        {!deleting && (myReview?.userId === GlobalTokenID.id || GlobalTokenID.isAdmin) && (
+                        {!deleting && myReview?.userId === GlobalTokenID.id && (
                             <button type="button" className="btn btn-danger" onClick={() => setDeleting(true)}>Delete</button>
                         )}
                         {!deleting && myReview?.userId === GlobalTokenID.id && (

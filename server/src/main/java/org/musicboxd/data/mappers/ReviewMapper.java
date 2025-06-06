@@ -16,7 +16,7 @@ public class ReviewMapper implements RowMapper<Review> {
         review.setAlbum(null);
         review.setAlbumId(resultSet.getInt("album_id"));
         review.setContent(resultSet.getString("content"));
-        review.setLikes(0);
+        review.setLikes(-1);
         review.setLikedByCurrentUser(false);
         review.setStars(resultSet.getInt("stars"));
         review.setUserId(resultSet.getInt("user_id"));
