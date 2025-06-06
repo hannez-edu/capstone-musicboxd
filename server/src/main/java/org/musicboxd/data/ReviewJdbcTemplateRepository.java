@@ -34,25 +34,6 @@ public class ReviewJdbcTemplateRepository implements ReviewRepository {
     }
 
     @Override
-    public List<Review> findLatest(int latestCount, int currentUserId) {
-        final String sql = "select review_id, album_id, user_id, `content`, stars " +
-                "from reviews " +
-                "order by review_id desc " +
-                "limit ?;";
-
-        List<Review> latest = jdbcTemplate.query(sql, new ReviewMapper(), latestCount);
-
-        for (Review review : latest) {
-            joinUser(review);
-            joinAlbum(review);
-            joinLikes(review, jdbcTemplate);
-            joinLikedByCurrentUser(review, currentUserId, jdbcTemplate);
-        }
-
-        return latest;
-    }
-
-    @Override
     @Transactional
     public Review findById(int reviewId, int currentUserId) {
         final String sql = "select review_id, album_id, user_id, `content`, stars " +

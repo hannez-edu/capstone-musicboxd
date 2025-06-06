@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { AuthService } from "./Login";
-import { FaMagnifyingGlass } from "react-icons/fa6";
+import { GlobalTokenID } from "./Login";
 
 function Navbar() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -11,20 +10,14 @@ function Navbar() {
     e.preventDefault();
     if (searchTerm.trim()) {
       navigate(`/search?q=${encodeURIComponent(searchTerm.trim())}`);
-      setSearchTerm(""); // Clear search term after submission
     }
   };
 
-  const handleLogout = () => {
-    AuthService.clearAuth();
-    setSearchTerm(""); // Clear search when logging out
-    navigate("/");
-  };
-
   // Check if user is logged in and get their ID
-  const isLoggedIn = AuthService.isLoggedIn();
-  const auth = AuthService.getAuth();
-  const userCatalogPath = isLoggedIn && auth ? `/catalog/${auth.id}` : "/login";
+  const isLoggedIn = GlobalTokenID.id && GlobalTokenID.token;
+  const userCatalogPath = isLoggedIn
+    ? `/catalog/${GlobalTokenID.id}`
+    : "/login";
 
   return (
     <>
@@ -32,7 +25,7 @@ function Navbar() {
         <h1>
           <Link to={"/"}>MusicBoxd</Link>
         </h1>
-        <form className="d-flex gap-2" onSubmit={handleSubmit}>
+        <form className="form-inline" onSubmit={handleSubmit}>
           <input
             type="search"
             placeholder="Search for an album..."
@@ -40,18 +33,14 @@ function Navbar() {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
           <button className="btn btn-outline-primary" type="submit">
-            <FaMagnifyingGlass size="20px" />
+            Submit
           </button>
         </form>
+        <Link to={"/login"}>Login</Link>
         {isLoggedIn ? (
-          <>
-            <Link to={userCatalogPath}>My Catalog</Link>
-            <button className="btn btn-link" onClick={handleLogout}>
-              Logout
-            </button>
-          </>
+          <Link to={userCatalogPath}>My Catalog</Link>
         ) : (
-          <Link to={"/login"} onClick={() => setSearchTerm("")}>Login</Link>
+          <Link to={"/login"}>My Catalog</Link>
         )}
       </nav>
     </>

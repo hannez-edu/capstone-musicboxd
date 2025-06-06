@@ -27,19 +27,7 @@ function fetchAddAlbum(album) {
     return fetch(`${BASE_URL}`, init);
 }
 
-function fetchDeleteAlbum(albumId) {
-    const init = {
-        method: "DELETE",
-        headers: {
-            "Authorization": "Bearer " + GlobalTokenID.token
-        },
-    };
-
-    return fetch(`${BASE_URL}/${albumId}`, init);
-}
-
 export {
     fetchAlbumById,
-    fetchAddAlbum,
-    fetchDeleteAlbum
+    fetchAddAlbum
 };
