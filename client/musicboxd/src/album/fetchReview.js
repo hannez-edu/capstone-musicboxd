@@ -2,6 +2,28 @@ import { GlobalTokenID } from "../Login";
 
 const BASE_URL = "http://localhost:8080/api/reviews";
 
+function fetchReviewById(reviewId) {
+    const init = {
+        method: "GET",
+        headers: {
+            "Accept": "application/json",
+        },
+    };
+
+    return fetch(`${BASE_URL}/review=${reviewId}&user=${GlobalTokenID.id == null ? 0 : GlobalTokenID.id}`, init);
+}
+
+function fetchLatestReviews(latestCount) {
+    const init = {
+        method: "GET",
+        headers: {
+            "Accept": "application/json"
+        }
+    };
+
+    return fetch(`${BASE_URL}/latestCount=${latestCount}&user=${GlobalTokenID.id == null ? 0 : GlobalTokenID.id}`, init);
+}
+
 function fetchAddReview(review) {
     const init = {
         method: "POST",
@@ -49,12 +71,14 @@ function fetchUpdateLikeReview(reviewId) {
         }
     };
 
-    return fetch(`${BASE_URL}/review=${reviewId}&user=${GlobalTokenID.id}`, init);
+    return fetch(`${BASE_URL}/review=${reviewId}&user=${GlobalTokenID.id == null ? 0 : GlobalTokenID.id}`, init);
 }
 
 export {
     fetchAddReview,
     fetchUpdateReview,
     fetchDeleteReview,
-    fetchUpdateLikeReview
+    fetchUpdateLikeReview,
+    fetchReviewById,
+    fetchLatestReviews
 };

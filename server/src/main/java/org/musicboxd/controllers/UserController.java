@@ -44,6 +44,15 @@ public class UserController {
         return service.findById(userId);
     }
 
+    @GetMapping("/{userId}/following")
+    public ResponseEntity<List<User>> getFollowing(@PathVariable int userId) {
+        User user = service.findById(userId);
+        if (user == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(user.getFollowing(), HttpStatus.OK);
+    }
+
     @PostMapping("/register")
     public ResponseEntity<Object> registerUser(@RequestBody Map<String, String> userData) {
         User user = new User(0, userData.get("userName"), userData.get("password"), userData.get("email"),
@@ -59,7 +68,10 @@ public class UserController {
     }
 
     @PutMapping("/update/{userId}")
-    public ResponseEntity<Object> update(@PathVariable int userId, @RequestBody User user) {
+    public ResponseEntity<Object> update(@PathVariable int userId, @RequestBody Map<String, String> userData) {
+        User user = new User(Integer.parseInt(userData.get("userId")), userData.get("userName"), userData.get("password"), userData.get("email"),
+                userData.get("firstName"), userData.get("lastName"), List.of(UserRole.USER));
+
         if (userId != user.getUserId()) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
@@ -71,7 +83,7 @@ public class UserController {
 
         return ErrorResponse.build(result);
     }
-    
+
     @DeleteMapping("/delete/{userId}")
     public ResponseEntity<Void> deleteById(@PathVariable int userId) {
         Result<User> result = service.deleteById(userId);
@@ -93,6 +105,27 @@ public class UserController {
         }
 
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+    @DeleteMapping("/unfollow/{userId}")
+    public ResponseEntity<Object> unfollowUserById(@PathVariable int userId, @RequestBody Map<String, String> toUnfollow) {
+        int unfollowId = Integer.parseInt(toUnfollow.get("userId"));
+
+        Result<User> result = service.unfollowUserById(findById(userId), unfollowId);
+
+        if (result.getType() == ResultType.SUCCESS) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+    @GetMapping("/{userId}/following/{targetUserId}")
+    public ResponseEntity<Map<String, Boolean>> isFollowing(@PathVariable int userId, @PathVariable int targetUserId) {
+        boolean isFollowing = service.isFollowing(userId, targetUserId);
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("isFollowing", isFollowing);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     // AUTHENTICATION

@@ -4,6 +4,7 @@ import CatalogTabs from "./catalog/CatalogTabs";
 import CatalogGrid from "./catalog/CatalogGrid";
 import CatalogReviewsGrid from "./catalog/CatalogReviewsGrid";
 import FollowButton from "./catalog/FollowButton";
+import UpdateUserButton from "./catalog/UpdateUserButton";
 
 function CatalogPage() {
   const { userId } = useParams();
@@ -14,6 +15,15 @@ function CatalogPage() {
   const [activeTab, setActiveTab] = useState("LISTENED");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [userWasDeleted, setUserWasDeleted] = useState(false);
+
+  // Debug logging
+  console.log("CatalogPage Debug:", {
+    userId,
+    user,
+    userIdType: typeof userId,
+    userIdParsed: parseInt(userId),
+  });
 
   // Load all catalog data
   useEffect(() => {
@@ -31,6 +41,7 @@ function CatalogPage() {
           }
         })
         .then((userData) => {
+          console.log("User data loaded:", userData);
           setUser(userData);
 
           // Then fetch catalog entries for this user
@@ -114,11 +125,23 @@ function CatalogPage() {
         })
         .catch((error) => {
           console.log(error);
-          setError(error);
+          setError(JSON.stringify(error));
           setLoading(false);
         });
     }
   }, [userId]);
+
+  const updateParentInfo = (userDetails) => {
+    const newUser = {...user};
+
+    newUser.userName = userDetails.userName;
+    newUser.username = userDetails.username;
+    newUser.firstName = userDetails.firstName;
+    newUser.lastname = userDetails.lastName;
+    newUser.email = userDetails.email;
+
+    setUser(newUser);
+  }
 
   const renderTabContent = () => {
     if (loading) {
@@ -157,12 +180,27 @@ function CatalogPage() {
     );
   }
 
+  if (userWasDeleted) {
+    return (
+      <div>
+        User was deleted.
+      </div>
+    );
+  }
+
   return (
     <div className="container mt-4">
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h1>{user?.userName}'s Catalog</h1>
-        <FollowButton username={user?.userName} />
+        <div>
+          <FollowButton
+            username={user?.userName}
+            targetUserId={parseInt(userId)}
+          />
+        </div>
       </div>
+
+      <UpdateUserButton userId={parseInt(userId)} user={user} updateParentInfo={updateParentInfo} deleteParentInfo={() => setUserWasDeleted(true)} />
 
       <CatalogTabs activeTab={activeTab} onTabChange={setActiveTab} />
 

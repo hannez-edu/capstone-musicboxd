@@ -94,6 +94,11 @@ public class UserJdbcTemplateRepository implements UserRepository {
     @Override
     @Transactional
     public boolean deleteById(int userId) {
+        // Delete all review likes from reviews that the user made
+        List<Integer> reviewsByUser = jdbcTemplate.query("select review_id from reviews where user_id = ?;", (rs, i) -> {return rs.getInt("review_id");}, userId);
+        for (int i : reviewsByUser) {
+            jdbcTemplate.update("delete from review_likes where review_id = ?;", i);
+        }
         // Review & likes
         jdbcTemplate.update("delete from review_likes where user_id = ?;", userId);
         jdbcTemplate.update("delete from reviews where user_id = ?;", userId);
@@ -114,6 +119,19 @@ public class UserJdbcTemplateRepository implements UserRepository {
                 + "values (?,?);";
 
         return jdbcTemplate.update(sql, user.getUserId(), userId) > 0;
+    }
+
+    public boolean unfollowUserById(User user, int userId) {
+        final String sql = "delete from following where follower_id = ? and followed_id = ?;";
+
+        return jdbcTemplate.update(sql, user.getUserId(), userId) > 0;
+    }
+
+    public boolean isFollowing(int followerId, int followedId) {
+        final String sql = "select count(*) from following where follower_id = ? and followed_id = ?;";
+
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, followerId, followedId);
+        return count != null && count > 0;
     }
 
     // Should set the user's role list
@@ -140,7 +158,8 @@ public class UserJdbcTemplateRepository implements UserRepository {
         RowMapper<Integer> rowMapper = (rs, rowNum) -> rs.getInt("follower_id");
 
         final String sql = "select user_id, user_name, email, password_hash, first_name, last_name from users " +
-                "inner join `following` on `following`.follower_id = ?;";
+                "inner join following on users.user_id = following.followed_id " +
+                "where following.follower_id = ?;";
 
         List<User> following = jdbcTemplate.query(sql, new UserMapper(), user.getUserId());
         user.setFollowing(following);

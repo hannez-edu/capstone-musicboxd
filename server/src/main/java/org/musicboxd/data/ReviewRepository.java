@@ -9,6 +9,8 @@ public interface ReviewRepository {
 
     public Review findById(int reviewId, int currentUserId);
 
+    public List<Review> findLatest(int latestCount, int currentUserId);
+
     public List<Review> findByUserId(int reviewerId, int currentUserId);
 
     public Review add(Review review);

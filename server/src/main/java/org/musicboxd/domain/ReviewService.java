@@ -25,6 +25,14 @@ public class ReviewService {
         return repository.findById(reviewId, currentUserId);
     }
 
+    public List<Review> findLatest(int latestCount, int currentUserId) {
+        if (latestCount < 0) {
+            return null;
+        } else {
+            return repository.findLatest(latestCount, currentUserId);
+        }
+    }
+
     public List<Review> findByUserId(int reviewerId, int currentUserId) {
         return repository.findByUserId(reviewerId, currentUserId);
     }

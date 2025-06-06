@@ -26,6 +26,17 @@ public class ReviewController {
         return service.findAll();
     }
 
+    @GetMapping("/latestCount={latestCount}&user={currentUserId}")
+    public ResponseEntity<List<Review>> findLatest(@PathVariable int latestCount, @PathVariable int currentUserId) {
+        List<Review> latest = service.findLatest(latestCount, currentUserId);
+
+        if (latest == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } else {
+            return new ResponseEntity<>(latest, HttpStatus.OK);
+        }
+    }
+
     @GetMapping("/review={reviewId}&user={currentUserId}")
     public ResponseEntity<Review> findById(@PathVariable int reviewId, @PathVariable int currentUserId) {
         Review review = service.findById(reviewId, currentUserId);
